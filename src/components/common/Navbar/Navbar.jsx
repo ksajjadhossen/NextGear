@@ -115,11 +115,27 @@ const Navbar = () => {
                         href="/profile"
                         className="flex items-center gap-2 group"
                       >
-                        <FaUserCircle className="text-xl text-gray-400 group-hover:text-black transition-colors" />
+                        {/* ইউজার ইমেজ থাকলে সেটা দেখাবে, না থাকলে আইকন */}
+                        {user?.photoURL ? (
+                          <div className="relative w-8 h-8">
+                            <Image
+                              src={user?.photoURL}
+                              alt="Profile"
+                              fill
+                              className="rounded-full object-cover border border-gray-100 transition-transform group-hover:scale-105"
+                            />
+                          </div>
+                        ) : (
+                          <FaUserCircle className="text-xl text-gray-400 group-hover:text-black transition-colors" />
+                        )}
+
                         <span className="hidden sm:block text-[13px] font-medium text-gray-600 group-hover:text-black">
-                          Profile
+                          {user?.displayName
+                            ? user.displayName.split(" ")[0]
+                            : "Profile"}
                         </span>
                       </Link>
+
                       <button
                         onClick={handleLogOut}
                         className="text-[12px] font-medium text-red-500 hover:underline"
