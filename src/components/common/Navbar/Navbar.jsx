@@ -1,11 +1,35 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 import { FaRegHeart, FaUserCircle } from "react-icons/fa";
 import Image from "next/image";
+import { useAuth } from "@/context/authContext";
+import { logout } from "@/lib/authOperation";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
-  // এখানে আপনার আসল লগইন লজিক বসবে (উদা: const { user } = useAuth())
-  const isLoggedIn = false;
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const handleLogOut = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  const handleWishList = () => {
+    if (user) {
+      router.push("/wishlist");
+    } else {
+      {
+        router.push("/login");
+        alert("Please log in to view your wishlist.");
+        return;
+      }
+    }
+  };
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -42,7 +66,7 @@ const Navbar = () => {
                   </Link>
                 ))}
 
-                {isLoggedIn && (
+                {user && (
                   <Link
                     href="/my-items"
                     className="text-[13px] font-medium text-gray-500 hover:text-black transition-colors"
@@ -64,13 +88,13 @@ const Navbar = () => {
                 </div>
 
                 {/* ❤️ Wishlist */}
-                <Link href="/wishlist" className="relative group p-2">
+                <button onClick={handleWishList} className="relative group p-2">
                   <FaRegHeart className="text-gray-400 group-hover:text-red-500 transition-colors duration-300 text-lg" />
-                </Link>
+                </button>
 
                 {/* Auth & Protected Profile */}
                 <div className="flex items-center space-x-3 border-l border-gray-100 pl-3 sm:pl-5">
-                  {!isLoggedIn ? (
+                  {!user ? (
                     <>
                       <Link
                         href="/login"
@@ -87,7 +111,6 @@ const Navbar = () => {
                     </>
                   ) : (
                     <div className="flex items-center space-x-4">
-                      {/* প্রটেক্টেড অপশন ২: প্রোফাইল আইকন */}
                       <Link
                         href="/profile"
                         className="flex items-center gap-2 group"
@@ -97,7 +120,10 @@ const Navbar = () => {
                           Profile
                         </span>
                       </Link>
-                      <button className="text-[12px] font-medium text-red-500 hover:underline">
+                      <button
+                        onClick={handleLogOut}
+                        className="text-[12px] font-medium text-red-500 hover:underline"
+                      >
                         Logout
                       </button>
                     </div>
@@ -168,8 +194,7 @@ const Navbar = () => {
               </li>
             ))}
 
-            {/* প্রটেক্টেড মোবাইল মেনু */}
-            {isLoggedIn && (
+            {user && (
               <>
                 <li>
                   <Link

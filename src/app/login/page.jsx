@@ -1,8 +1,34 @@
-import React from "react";
-import { FaGoogle, FaFacebookF } from "react-icons/fa";
-import Link from "next/link"; // লিঙ্ক ডাইভার্ট করার জন্য
+"use client";
+import React, { useState } from "react";
+import { FaGoogle } from "react-icons/fa";
+import Link from "next/link";
+import { loginWithEmail, loginWithGoogle } from "@/lib/authOperation";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+  const handleGoogleLogin = async () => {
+    try {
+      await loginWithGoogle();
+      router.push("/");
+    } catch (error) {
+      console.error("Google Login Error:", error.message);
+    }
+  };
+
+  const handleLogInWithEmail = async (e) => {
+    e.preventDefault();
+    // Implement email/password login logic here
+    try {
+      await loginWithEmail(email, password);
+      router.push("/");
+    } catch (error) {
+      console.error("Email/Password Login Error:", error.message);
+    }
+  };
+
   return (
     <div className="flex items-center justify-center bg-white px-6 py-20">
       <div className="w-full max-w-95">
@@ -16,7 +42,10 @@ const Login = () => {
         </div>
 
         <div className="space-y-3 mb-8">
-          <button className="flex w-full items-center justify-center gap-3 rounded-full border border-gray-200 py-2.5 text-sm font-medium text-black hover:bg-gray-50 transition-all active:scale-95">
+          <button
+            onClick={() => handleGoogleLogin()}
+            className="flex w-full items-center justify-center gap-3 rounded-full border border-gray-200 py-2.5 text-sm font-medium text-black hover:bg-gray-50 transition-all active:scale-95"
+          >
             <FaGoogle className="text-red-500" /> Continue with Google
           </button>
         </div>
@@ -30,7 +59,7 @@ const Login = () => {
           </span>
         </div>
 
-        <form className="space-y-4">
+        <form onSubmit={handleLogInWithEmail} className="space-y-4">
           <div>
             <label className="text-[12px] font-medium text-gray-400 ml-1">
               Email Address
@@ -39,6 +68,7 @@ const Login = () => {
               type="email"
               placeholder="Enter your email address"
               className="w-full rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm text-black focus:border-black focus:bg-white focus:outline-none transition-all"
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div>
@@ -49,9 +79,13 @@ const Login = () => {
               type="password"
               placeholder="Enter your password"
               className="w-full rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm text-black focus:border-black focus:bg-white focus:outline-none transition-all"
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button className="w-full rounded-full bg-black py-3 text-sm font-semibold text-white hover:bg-gray-800 transition-all active:scale-95 mt-6">
+          <button
+            type="submit"
+            className="w-full rounded-full bg-black py-3 text-sm font-semibold text-white hover:bg-gray-800 transition-all active:scale-95 mt-6"
+          >
             Sign In
           </button>
         </form>

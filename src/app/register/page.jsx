@@ -1,8 +1,36 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { FaGoogle, FaFacebookF } from "react-icons/fa";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { loginWithGoogle, registerWithEmail } from "@/lib/authOperation";
 
 const Register = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const router = useRouter();
+  const handleGoogleLogin = async () => {
+    try {
+      await loginWithGoogle();
+      router.push("/");
+    } catch (error) {
+      console.error("Google login failed:", error);
+    }
+  };
+  const handleEmailRegistration = async (e) => {
+    e.preventDefault();
+    // Implement email registration logic here
+
+    try {
+      await registerWithEmail(fullName, email, password);
+      router.push("/login");
+      console.log("successfully created account");
+    } catch (error) {
+      console.error("Email registration failed:", error);
+    }
+  };
+
   return (
     <div className="flex items-center justify-center bg-white px-6 py-20">
       <div className="w-full max-w-95">
@@ -16,10 +44,12 @@ const Register = () => {
         </div>
 
         <div className="space-y-3 mb-8">
-          <button className="flex w-full items-center justify-center gap-3 rounded-full border border-gray-200 py-2.5 text-sm font-medium text-black hover:bg-gray-50 transition-all active:scale-95">
+          <button
+            onClick={() => handleGoogleLogin()}
+            className="flex w-full items-center justify-center gap-3 rounded-full border border-gray-200 py-2.5 text-sm font-medium text-black hover:bg-gray-50 transition-all active:scale-95"
+          >
             <FaGoogle className="text-red-500" /> Sign up with Google
           </button>
-       
         </div>
 
         <div className="relative mb-8 text-center">
@@ -31,7 +61,7 @@ const Register = () => {
           </span>
         </div>
 
-        <form className="space-y-4">
+        <form onSubmit={handleEmailRegistration} className="space-y-4">
           <div>
             <label className="text-[12px] font-medium text-gray-400 ml-1">
               Full Name
@@ -40,6 +70,8 @@ const Register = () => {
               type="text"
               placeholder="Enter your full name"
               className="w-full rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm text-black focus:border-black focus:bg-white focus:outline-none transition-all"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
             />
           </div>
           <div>
@@ -50,6 +82,8 @@ const Register = () => {
               type="email"
               placeholder="Enter your email address"
               className="w-full rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm text-black focus:border-black focus:bg-white focus:outline-none transition-all"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div>
@@ -60,9 +94,14 @@ const Register = () => {
               type="password"
               placeholder="Enter your password"
               className="w-full rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm text-black focus:border-black focus:bg-white focus:outline-none transition-all"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button className="w-full rounded-full bg-black py-3 text-sm font-semibold text-white hover:bg-gray-800 transition-all active:scale-95 mt-6">
+          <button
+            type="submit"
+            className="w-full rounded-full bg-black py-3 text-sm font-semibold text-white hover:bg-gray-800 transition-all active:scale-95 mt-6"
+          >
             Create Account
           </button>
         </form>
