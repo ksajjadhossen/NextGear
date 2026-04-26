@@ -1,6 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import { FaRegHeart, FaUserCircle } from "react-icons/fa";
+import Image from 'next/image';
+
 
 const Navbar = () => {
   // এখানে আপনার আসল লগইন লজিক বসবে (উদা: const { user } = useAuth())
@@ -15,18 +17,22 @@ const Navbar = () => {
   return (
     <div className="drawer drawer-end sticky top-0 z-50">
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-
       <div className="drawer-content flex flex-col">
         <nav className="w-full bg-white/90 backdrop-blur-sm border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
             <div className="flex justify-between h-16 items-center">
               {/* Logo */}
-              <div className="shrink-0">
+              <div className="shrink-0"> 
                 <Link
                   href="/"
                   className="text-xl font-bold tracking-tighter text-black uppercase"
                 >
-                  Next Gear
+                 <Image 
+            src="/bgimg.png" 
+            alt="Logo"
+             width={150} 
+             height={50}
+             />
                 </Link>
               </div>
 
@@ -42,7 +48,7 @@ const Navbar = () => {
                   </Link>
                 ))}
 
-                {/* প্রটেক্টেড ডেস্কটপ লিংক ১: Manage My Gear */}
+            
                 {isLoggedIn && (
                   <Link
                     href="/my-items"

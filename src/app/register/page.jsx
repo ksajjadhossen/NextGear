@@ -19,9 +19,7 @@ const Register = () => {
           <button className="flex w-full items-center justify-center gap-3 rounded-full border border-gray-200 py-2.5 text-sm font-medium text-black hover:bg-gray-50 transition-all active:scale-95">
             <FaGoogle className="text-red-500" /> Sign up with Google
           </button>
-          <button className="flex w-full items-center justify-center gap-3 rounded-full border border-gray-200 py-2.5 text-sm font-medium text-black hover:bg-gray-50 transition-all active:scale-95">
-            <FaFacebookF className="text-blue-600" /> Sign up with Facebook
-          </button>
+       
         </div>
 
         <div className="relative mb-8 text-center">
