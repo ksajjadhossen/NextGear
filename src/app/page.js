@@ -1,9 +1,11 @@
+import Footer from "@/components/Footer/Footer";
+import Navbar from "@/components/Navbar/Navbar";
 import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <h1>HI.. it's Next-Gear project</h1>
+    <div className="">
+      <h1>Heloooo..</h1>
     </div>
   );
 }
