@@ -34,7 +34,7 @@ const Navbar = () => {
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "All Items", href: "/items" },
-    { name: "About", href: "/about" },
+    { name: "About", href: "/about-us" },
   ];
 
   return (
@@ -50,7 +50,15 @@ const Navbar = () => {
                   href="/"
                   className="text-xl font-bold tracking-tighter text-black uppercase"
                 >
-                  <Image src="/bgimg.png" alt="Logo" width={150} height={50} />
+                  <Image
+                    src="/bgimg.png"
+                    alt="Logo"
+                    width={150}
+                    height={50}
+                    priority
+                    loading="eager"
+                    style={{ width: "auto", height: "auto" }}
+                  />
                 </Link>
               </div>
 
