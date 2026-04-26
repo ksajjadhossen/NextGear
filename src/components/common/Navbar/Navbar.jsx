@@ -1,16 +1,40 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 import { FaRegHeart, FaUserCircle } from "react-icons/fa";
 import Image from "next/image";
+import { useAuth } from "@/context/authContext";
+import { logout } from "@/lib/authOperation";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
-  // এখানে আপনার আসল লগইন লজিক বসবে (উদা: const { user } = useAuth())
-  const isLoggedIn = false;
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const handleLogOut = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  const handleWishList = () => {
+    if (user) {
+      router.push("/wishlist");
+    } else {
+      {
+        router.push("/login");
+        alert("Please log in to view your wishlist.");
+        return;
+      }
+    }
+  };
 
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "All Items", href: "/items" },
-    { name: "About", href: "/about" },
+    { name: "About", href: "/about-us" },
   ];
 
   return (
@@ -26,7 +50,15 @@ const Navbar = () => {
                   href="/"
                   className="text-xl font-bold tracking-tighter text-black uppercase"
                 >
-                  <Image src="/bgimg.png" alt="Logo" width={150} height={50} />
+                  <Image
+                    src="/bgimg.png"
+                    alt="Logo"
+                    width={150}
+                    height={50}
+                    priority
+                    loading="eager"
+                    style={{ width: "auto", height: "auto" }}
+                  />
                 </Link>
               </div>
 
@@ -42,7 +74,7 @@ const Navbar = () => {
                   </Link>
                 ))}
 
-                {isLoggedIn && (
+                {user && (
                   <Link
                     href="/my-items"
                     className="text-[13px] font-medium text-gray-500 hover:text-black transition-colors"
@@ -64,13 +96,13 @@ const Navbar = () => {
                 </div>
 
                 {/* ❤️ Wishlist */}
-                <Link href="/wishlist" className="relative group p-2">
+                <button onClick={handleWishList} className="relative group p-2">
                   <FaRegHeart className="text-gray-400 group-hover:text-red-500 transition-colors duration-300 text-lg" />
-                </Link>
+                </button>
 
                 {/* Auth & Protected Profile */}
                 <div className="flex items-center space-x-3 border-l border-gray-100 pl-3 sm:pl-5">
-                  {!isLoggedIn ? (
+                  {!user ? (
                     <>
                       <Link
                         href="/login"
@@ -87,17 +119,35 @@ const Navbar = () => {
                     </>
                   ) : (
                     <div className="flex items-center space-x-4">
-                      {/* প্রটেক্টেড অপশন ২: প্রোফাইল আইকন */}
                       <Link
                         href="/profile"
                         className="flex items-center gap-2 group"
                       >
-                        <FaUserCircle className="text-xl text-gray-400 group-hover:text-black transition-colors" />
+                        {/* ইউজার ইমেজ থাকলে সেটা দেখাবে, না থাকলে আইকন */}
+                        {user?.photoURL ? (
+                          <div className="relative w-8 h-8">
+                            <Image
+                              src={user?.photoURL}
+                              alt="Profile"
+                              fill
+                              className="rounded-full object-cover border border-gray-100 transition-transform group-hover:scale-105"
+                            />
+                          </div>
+                        ) : (
+                          <FaUserCircle className="text-xl text-gray-400 group-hover:text-black transition-colors" />
+                        )}
+
                         <span className="hidden sm:block text-[13px] font-medium text-gray-600 group-hover:text-black">
-                          Profile
+                          {user?.displayName
+                            ? user.displayName.split(" ")[0]
+                            : "Profile"}
                         </span>
                       </Link>
-                      <button className="text-[12px] font-medium text-red-500 hover:underline">
+
+                      <button
+                        onClick={handleLogOut}
+                        className="text-[12px] font-medium text-red-500 hover:underline"
+                      >
                         Logout
                       </button>
                     </div>
@@ -168,8 +218,7 @@ const Navbar = () => {
               </li>
             ))}
 
-            {/* প্রটেক্টেড মোবাইল মেনু */}
-            {isLoggedIn && (
+            {user && (
               <>
                 <li>
                   <Link
