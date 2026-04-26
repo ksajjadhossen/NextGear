@@ -1,8 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { FaRegHeart, FaUserCircle } from "react-icons/fa";
-import Image from 'next/image';
-
+import Image from "next/image";
 
 const Navbar = () => {
   // এখানে আপনার আসল লগইন লজিক বসবে (উদা: const { user } = useAuth())
@@ -22,17 +21,12 @@ const Navbar = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
             <div className="flex justify-between h-16 items-center">
               {/* Logo */}
-              <div className="shrink-0"> 
+              <div className="shrink-0">
                 <Link
                   href="/"
                   className="text-xl font-bold tracking-tighter text-black uppercase"
                 >
-                 <Image 
-            src="/bgimg.png" 
-            alt="Logo"
-             width={150} 
-             height={50}
-             />
+                  <Image src="/bgimg.png" alt="Logo" width={150} height={50} />
                 </Link>
               </div>
 
@@ -48,7 +42,6 @@ const Navbar = () => {
                   </Link>
                 ))}
 
-            
                 {isLoggedIn && (
                   <Link
                     href="/my-items"
