@@ -5,6 +5,7 @@ import FilterSidebar from "@/components/AllItemsPages/FilterSidebar/FilterSideba
 import Pagination from "@/components/AllItemsPages/Pagination/Pagination";
 import ProductCard from "@/components/AllItemsPages/ProductCard/ProductCard";
 import ProductHeader from "@/components/AllItemsPages/ProductHeader/ProductHeader";
+import { motion } from "framer-motion";
 
 const Page = () => {
   const [allProducts, setAllProducts] = useState([]);
@@ -68,6 +69,28 @@ const Page = () => {
     setSortType("SORT / NEWEST ARRIVALS");
   };
 
+  const sidebarVariants = {
+    hidden: { opacity: 0, x: -50 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.8, ease: "easeOut" },
+    },
+  };
+
+  const contentVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.8,
+        ease: "easeOut",
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -79,15 +102,27 @@ const Page = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-20">
+    <div className="max-w-7xl mx-auto px-6 py-20 overflow-hidden">
       <div className="flex flex-col lg:flex-row gap-12">
-        <FilterSidebar
-          filters={filters}
-          setFilters={setFilters}
-          onReset={handleReset}
-        />
+        <motion.div
+          variants={sidebarVariants}
+          initial="hidden"
+          animate="visible"
+          className="w-full lg:w-fit"
+        >
+          <FilterSidebar
+            filters={filters}
+            setFilters={setFilters}
+            onReset={handleReset}
+          />
+        </motion.div>
 
-        <div className="flex-1">
+        <motion.div
+          variants={contentVariants}
+          initial="hidden"
+          animate="visible"
+          className="flex-1"
+        >
           <ProductHeader
             productCount={filteredAndSortedProducts.length}
             onSortChange={setSortType}
@@ -96,8 +131,17 @@ const Page = () => {
           {filteredAndSortedProducts.length > 0 ? (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
-                {filteredAndSortedProducts.map((item) => (
-                  <ProductCard key={item.id} product={item} />
+                {filteredAndSortedProducts.map((item, index) => (
+                  <motion.div
+                    key={item.id}
+                    variants={{
+                      hidden: { opacity: 0, y: 20 },
+                      visible: { opacity: 1, y: 0 },
+                    }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <ProductCard product={item} />
+                  </motion.div>
                 ))}
               </div>
 
@@ -108,7 +152,7 @@ const Page = () => {
           ) : (
             <EmptyState />
           )}
-        </div>
+        </motion.div>
       </div>
     </div>
   );

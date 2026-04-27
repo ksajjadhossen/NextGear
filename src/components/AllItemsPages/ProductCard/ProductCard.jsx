@@ -1,13 +1,20 @@
+"use client";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
 const ProductCard = ({ product }) => {
   return (
-    <div className="group relative bg-white border border-slate-100 p-0 rounded-none transition-all duration-500 hover:border-black">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="group relative bg-white border border-slate-100 p-0 rounded-none transition-all duration-500 hover:border-black"
+    >
       {/* Product Image Holder */}
       <div className="relative aspect-4/5 bg-[#F9F9F9] overflow-hidden flex items-center justify-center">
-        {/* Subtle Badge */}
         <div className="absolute top-4 left-4 z-10">
           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white bg-black px-2 py-1">
             New Arrival
@@ -53,7 +60,6 @@ const ProductCard = ({ product }) => {
           <p className="text-[11px] text-slate-400 font-light italic">
             In stock / Ready to ship
           </p>
-          {/* Subtle Add Icon */}
           <button className="text-black hover:scale-125 transition-transform">
             <svg
               width="16"
@@ -68,7 +74,7 @@ const ProductCard = ({ product }) => {
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
