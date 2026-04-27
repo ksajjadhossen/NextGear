@@ -2,93 +2,102 @@ import React from "react";
 
 const AboutPage = () => {
   return (
-    <section className="py-24 bg-white overflow-hidden">
+    <section className="py-32 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header Section */}
-        <div className="mb-20">
-          <span className="text-blue-600 font-bold uppercase tracking-[0.2em] text-xs">
-            Our Identity
+        <div className="mb-24 border-l-4 border-black pl-8">
+          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">
+            Establishment / Next Gear
           </span>
-          <h2 className="text-5xl md:text-7xl font-extrabold mt-4 tracking-tighter text-black">
-            Next Gear. <br />
-            <span className="text-gray-400 font-medium">
-              Reimagining Tech Retail.
-            </span>
-          </h2>
+          <h1 className="text-6xl md:text-8xl font-semibold mt-4 tracking-tighter text-black leading-[0.9]">
+            REIMAGINING <br />
+            <span className="text-slate-300 font-light">TECH RETAIL.</span>
+          </h1>
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-2 gap-16 items-start">
+        <div className="grid lg:grid-cols-2 gap-20 items-start">
           {/* Left Side: Brand Philosophy */}
-          <div className="space-y-8">
-            <p className="text-2xl md:text-3xl text-gray-700 leading-snug font-medium">
-              At <span className="text-black font-bold">Next Gear</span>, we
-              don&apos;t just sell gadgets. We curate the tools that power your
-              digital lifestyle.
+          <div className="space-y-12">
+            <p className="text-2xl md:text-4xl text-black leading-tight tracking-tight font-medium">
+              We curate the{" "}
+              <span className="text-slate-400">digital tools</span> that
+              redefine how you interface with the modern world.
             </p>
-            <p className="text-lg text-gray-500 leading-relaxed">
-              Founded on the principles of minimalism and high performance, we
-              bridge the gap between cutting-edge technology and seamless user
-              experience. Every product in our catalog undergoes rigorous
-              quality assessment to ensure it meets the standards of modern
-              professionals and tech enthusiasts alike.
+            <p className="text-base text-slate-500 leading-relaxed font-light max-w-lg">
+              Founded on the principles of minimalism and peak engineering, Next
+              Gear bridges the gap between hardware complexity and seamless user
+              utility. Every product in our catalog undergoes rigorous
+              architectural assessment.
             </p>
 
-            {/* Stats/Achievements */}
-            <div className="grid grid-cols-2 gap-8 pt-8 border-t border-gray-100">
-              <div>
-                <h4 className="text-4xl font-bold text-black">100%</h4>
-                <p className="text-sm text-gray-500 uppercase tracking-widest mt-2 font-semibold">
-                  Authentic Products
+            {/* Performance Stats */}
+            <div className="grid grid-cols-2 gap-12 pt-12 border-t border-slate-100">
+              <div className="group">
+                <h4 className="text-5xl font-mono font-bold text-black group-hover:translate-x-2 transition-transform">
+                  100%
+                </h4>
+                <p className="text-[9px] text-slate-400 uppercase tracking-[0.3em] mt-3 font-black">
+                  Authentic Series
                 </p>
               </div>
-              <div>
-                <h4 className="text-4xl font-bold text-black">24/7</h4>
-                <p className="text-sm text-gray-500 uppercase tracking-widest mt-2 font-semibold">
-                  Expert Support
+              <div className="group">
+                <h4 className="text-5xl font-mono font-bold text-black group-hover:translate-x-2 transition-transform">
+                  24/7
+                </h4>
+                <p className="text-[9px] text-slate-400 uppercase tracking-[0.3em] mt-3 font-black">
+                  Global Support
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Right Side: Vision Cards */}
-          <div className="grid gap-6">
-            <div className="p-8 bg-[#fbfbfd] rounded-[2.5rem] border border-gray-100 hover:shadow-xl transition-all duration-500 group">
-              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:bg-black group-hover:text-white transition-colors duration-300 font-bold">
-                01
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-black">
-                Curated Excellence
+          {/* Right Side: Vision Grid (Boxy Aesthetic) */}
+          <div className="grid gap-px bg-slate-100 border border-slate-100">
+            <div className="p-12 bg-white hover:bg-slate-50 transition-colors">
+              <span className="text-[10px] font-mono text-slate-300 mb-4 block underline">
+                01 // CURATION
+              </span>
+              <h3 className="text-xl font-bold mb-4 text-black uppercase tracking-tight">
+                Architectural Excellence
               </h3>
-              <p className="text-gray-500 leading-relaxed">
-                We handpick every item, ensuring that our customers only get
-                access to the most innovative and durable gear on the market.
+              <p className="text-sm text-slate-500 leading-relaxed font-light">
+                We handpick every item, ensuring access to the most innovative
+                and durable industrial-grade gear on the market.
               </p>
             </div>
 
-            <div className="p-8 bg-[#fbfbfd] rounded-[2.5rem] border border-gray-100 hover:shadow-xl transition-all duration-500 group">
-              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:bg-black group-hover:text-white transition-colors duration-300 font-bold">
-                02
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-black">
-                Customer First
+            <div className="p-12 bg-white hover:bg-slate-50 transition-colors">
+              <span className="text-[10px] font-mono text-slate-300 mb-4 block underline">
+                02 // COMMITMENT
+              </span>
+              <h3 className="text-xl font-bold mb-4 text-black uppercase tracking-tight">
+                Professional Integrity
               </h3>
-              <p className="text-gray-500 leading-relaxed">
-                From pre-purchase advice to after-sales support, our team is
-                dedicated to providing a premium shopping journey.
+              <p className="text-sm text-slate-500 leading-relaxed font-light">
+                From pre-purchase technical advice to deep after-sales support,
+                our team ensures a premium shopping journey for engineers and
+                creators.
               </p>
             </div>
           </div>
         </div>
 
-        {/* CTA for Professionalism */}
-        <div className="mt-20 p-12 bg-black rounded-[3rem] text-center text-white">
-          <h3 className="text-3xl md:text-4xl font-bold mb-6 italic">
-            Ready to upgrade your workflow?
-          </h3>
-          <button className="px-10 py-4 bg-white text-black rounded-full font-bold hover:bg-gray-200 transition-all active:scale-95">
-            Explore Collection
-          </button>
+        {/* Global Footer Banner */}
+        <div className="mt-32 relative bg-black p-16 md:p-24 rounded-none text-left overflow-hidden">
+          {/* Background Decorative Ref Number */}
+          <div className="absolute top-10 right-10 opacity-10 text-[100px] font-mono font-black text-white select-none leading-none">
+            2026
+          </div>
+
+          <div className="relative z-10 max-w-2xl">
+            <h3 className="text-4xl md:text-5xl font-semibold mb-8 text-white tracking-tighter">
+              READY TO UPGRADE <br /> YOUR WORKFLOW?
+            </h3>
+            <button className="px-12 py-5 bg-white text-black text-[11px] font-black uppercase tracking-[0.3em] rounded-none hover:bg-slate-200 transition-all active:scale-[0.98]">
+              Explore Collection
+            </button>
+          </div>
         </div>
       </div>
     </section>
