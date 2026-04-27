@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaCloudUploadAlt } from "react-icons/fa";
+import toast from "react-hot-toast"; // ১. ইমপোর্ট করুন
 
 const AddItemPage = () => {
   const router = useRouter();
@@ -12,7 +12,7 @@ const AddItemPage = () => {
     price: "",
     category: "Gadget",
     image:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000&auto=format&fit=crop", // ডিফল্ট ইমেজ
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000&auto=format&fit=crop",
     description: "",
     status: "Active",
   });
@@ -22,14 +22,12 @@ const AddItemPage = () => {
     setLoading(true);
 
     try {
-      // ১. আগের ডাটা নিয়ে আসা
       const existingItems =
         JSON.parse(localStorage.getItem("myInventory")) || [];
 
-      // ২. নতুন ডাটা গুছিয়ে নেওয়া
       const newItem = {
         ...formData,
-        id: Date.now(), // ইউনিক আইডি
+        id: Date.now(),
         price: parseFloat(formData.price),
         date: new Date().toLocaleDateString("en-US", {
           month: "short",
@@ -38,18 +36,31 @@ const AddItemPage = () => {
         }),
       };
 
-      // ৩. লোকাল স্টোরেজে পুশ করা
       const updatedItems = [newItem, ...existingItems];
       localStorage.setItem("myInventory", JSON.stringify(updatedItems));
 
-      // ৪. সাকসেস মেসেজ ও রিডাইরেক্ট
+      // ২. সাকসেস টোস্ট মেসেজ
+      toast.success(`${formData.name} added to inventory!`, {
+        style: {
+          borderRadius: "0px",
+          background: "#000",
+          color: "#fff",
+          fontSize: "12px",
+          fontWeight: "bold",
+          letterSpacing: "1px",
+          textTransform: "uppercase",
+        },
+      });
+
       setTimeout(() => {
         setLoading(false);
         router.push("/my-items");
-      }, 800);
+      }, 1200);
     } catch (error) {
       console.error("Error saving data:", error);
       setLoading(false);
+      // ৩. এরর টোস্ট মেসেজ
+      toast.error("Failed to add item. Please try again.");
     }
   };
 
@@ -69,7 +80,6 @@ const AddItemPage = () => {
         className="space-y-8 border-t border-black pt-10"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Product Name */}
           <div className="flex flex-col space-y-2">
             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
               Product Name
@@ -85,7 +95,6 @@ const AddItemPage = () => {
             />
           </div>
 
-          {/* Price */}
           <div className="flex flex-col space-y-2">
             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
               Price ($)
@@ -102,7 +111,6 @@ const AddItemPage = () => {
           </div>
         </div>
 
-        {/* Category & Description */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="flex flex-col space-y-2">
             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
@@ -136,7 +144,6 @@ const AddItemPage = () => {
           </div>
         </div>
 
-        {/* Submit Button */}
         <div className="pt-10">
           <button
             type="submit"
