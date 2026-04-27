@@ -1,41 +1,87 @@
+"use client";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
+import React from "react";
+
 const ProductCard = ({ product }) => {
   return (
-    <div className="group relative bg-[#f9f9fb] rounded-[2rem] p-6 transition-all duration-500 hover:bg-white hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-transparent hover:border-gray-100">
-      {/* Product Image */}
-      <div className="aspect-square bg-white rounded-2xl overflow-hidden mb-6 flex items-center justify-center">
-        <img
-          src="/placeholder-gadget.png"
-          alt="Product"
-          className="w-40 group-hover:scale-110 transition-transform duration-500"
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="group relative bg-white border border-slate-100 transition-all duration-500 hover:border-black"
+    >
+      {/* Product Image Holder */}
+      <div className="relative aspect-4/5 bg-[#F9F9F9] overflow-hidden flex items-center justify-center">
+        <div className="absolute top-4 left-4 z-10">
+          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white bg-black px-2 py-1">
+            New Arrival
+          </span>
+        </div>
+
+        <Image
+          src={product?.image || "/placeholder-gadget.png"}
+          alt={product?.name || "Next Gear Product"}
+          fill
+          className="object-cover grayscale-30 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-[0.8s] ease-in-out"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          priority={product.id <= 6}
         />
+
+        {/* Quick View Overlay */}
+        <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center backdrop-blur-[2px]">
+          <Link
+            href={`/items/${product.id}`}
+            className="bg-white text-black text-[10px] font-bold uppercase tracking-widest px-8 py-4 rounded-none translate-y-4 group-hover:translate-y-0 transition-all duration-500 shadow-2xl hover:bg-black hover:text-white"
+          >
+            View Details
+          </Link>
+        </div>
       </div>
 
-      {/* Product Info */}
-      <div className="space-y-2">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-blue-500 bg-blue-50 px-2 py-1 rounded">
-          New
-        </span>
-        <h3 className="text-lg font-bold text-gray-900 leading-tight pt-1">
-          Ultra Dynamic Headphones
-        </h3>
-        <p className="text-sm text-gray-400 font-medium">Space Gray</p>
-        <div className="flex justify-between items-center mt-4">
-          <span className="text-xl font-extrabold">$449.00</span>
-          <button className="bg-black text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0 shadow-lg">
+      {/* Product Info Section */}
+      <div className="p-6 bg-white">
+        <div className="flex justify-between items-start mb-3">
+          <div className="space-y-1">
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+              {product?.category || "Tech Series"}
+            </p>
+            <h3 className="text-[16px] font-bold text-black tracking-tight leading-tight uppercase">
+              {product?.name || "Precision Audio Device"}
+            </h3>
+          </div>
+          <p className="text-[14px] font-mono font-bold text-black">
+            ${product?.price || "000.00"}
+          </p>
+        </div>
+
+        <p className="text-[11px] text-slate-500 font-light leading-relaxed mb-6 line-clamp-2">
+          {product?.description ||
+            "Experience next-level performance with our latest engineered series."}
+        </p>
+
+        <div className="pt-4 flex items-center justify-between border-t border-slate-50">
+          <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">
+            In stock / Ready to ship
+          </p>
+          <button className="text-black hover:scale-125 transition-all duration-300">
             <svg
-              width="20"
-              height="20"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="2.5"
-              viewBox="0 0 24 24"
             >
-              <path d="M12 4v16m8-8H4"></path>
+              <path d="M12 5v14M5 12h14" />
             </svg>
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
+
 export default ProductCard;

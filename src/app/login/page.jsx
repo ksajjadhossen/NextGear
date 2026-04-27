@@ -4,11 +4,13 @@ import { FaGoogle } from "react-icons/fa";
 import Link from "next/link";
 import { loginWithEmail, loginWithGoogle } from "@/lib/authOperation";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+
   const handleGoogleLogin = async () => {
     try {
       await loginWithGoogle();
@@ -20,7 +22,6 @@ const Login = () => {
 
   const handleLogInWithEmail = async (e) => {
     e.preventDefault();
-    // Implement email/password login logic here
     try {
       await loginWithEmail(email, password);
       router.push("/");
@@ -29,77 +30,117 @@ const Login = () => {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: { opacity: 1, x: 0 },
+  };
+
   return (
-    <div className="flex items-center justify-center bg-white px-6 py-20">
-      <div className="w-full max-w-95">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-semibold tracking-tight text-black">
+    <div className="flex items-center justify-center bg-white px-6 py-20 min-h-[80vh]">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="w-full max-w-[380px]" // max-w-95 এর বদলে স্ট্যান্ডার্ড পিক্সেল দেওয়া হয়েছে
+      >
+        {/* Header Section */}
+        <motion.div variants={itemVariants} className="text-center mb-10">
+          <h2 className="text-3xl font-semibold tracking-tight text-black uppercase">
             Welcome Back
           </h2>
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-[11px] font-medium uppercase tracking-widest text-gray-400 mt-2">
             Enter your details to sign in
           </p>
-        </div>
+        </motion.div>
 
-        <div className="space-y-3 mb-8">
+        {/* Social Login */}
+        <motion.div variants={itemVariants} className="space-y-3 mb-8">
           <button
             onClick={() => handleGoogleLogin()}
-            className="flex w-full items-center justify-center gap-3 rounded-full border border-gray-200 py-2.5 text-sm font-medium text-black hover:bg-gray-50 transition-all active:scale-95"
+            className="flex w-full items-center justify-center gap-3 rounded-none border border-gray-100 py-3 text-[11px] font-bold uppercase tracking-widest text-black hover:bg-black hover:text-white transition-all duration-300 active:scale-95 shadow-sm"
           >
             <FaGoogle className="text-red-500" /> Continue with Google
           </button>
-        </div>
+        </motion.div>
 
-        <div className="relative mb-8 text-center">
+        {/* Divider */}
+        <motion.div
+          variants={itemVariants}
+          className="relative mb-8 text-center"
+        >
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-100"></div>
           </div>
-          <span className="relative bg-white px-2 text-xs uppercase text-gray-400 font-medium">
+          <span className="relative bg-white px-3 text-[9px] uppercase text-gray-300 font-black tracking-widest">
             Or continue with
           </span>
-        </div>
+        </motion.div>
 
-        <form onSubmit={handleLogInWithEmail} className="space-y-4">
-          <div>
-            <label className="text-[12px] font-medium text-gray-400 ml-1">
+        {/* Login Form */}
+        <form onSubmit={handleLogInWithEmail} className="space-y-5">
+          <motion.div variants={itemVariants}>
+            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 mb-2 block">
               Email Address
             </label>
             <input
               type="email"
-              placeholder="Enter your email address"
-              className="w-full rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm text-black focus:border-black focus:bg-white focus:outline-none transition-all"
+              placeholder="YOUR@EMAIL.COM"
+              className="w-full rounded-none border border-gray-100 bg-gray-50 px-4 py-3 text-[11px] font-bold tracking-widest text-black focus:border-black focus:bg-white focus:outline-none transition-all placeholder:text-gray-200"
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
-          </div>
-          <div>
-            <label className="text-[12px] font-medium text-gray-400 ml-1">
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 mb-2 block">
               Password
             </label>
             <input
               type="password"
-              placeholder="Enter your password"
-              className="w-full rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm text-black focus:border-black focus:bg-white focus:outline-none transition-all"
+              placeholder="••••••••"
+              className="w-full rounded-none border border-gray-100 bg-gray-50 px-4 py-3 text-[11px] font-bold tracking-widest text-black focus:border-black focus:bg-white focus:outline-none transition-all"
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
-          </div>
-          <button
+          </motion.div>
+
+          <motion.button
+            variants={itemVariants}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
             type="submit"
-            className="w-full rounded-full bg-black py-3 text-sm font-semibold text-white hover:bg-gray-800 transition-all active:scale-95 mt-6"
+            className="w-full rounded-none bg-black py-4 text-[11px] font-black uppercase tracking-[0.3em] text-white hover:bg-gray-900 transition-all shadow-lg mt-6"
           >
             Sign In
-          </button>
+          </motion.button>
         </form>
 
-        <p className="mt-8 text-center text-sm text-gray-500">
+        {/* Footer */}
+        <motion.p
+          variants={itemVariants}
+          className="mt-10 text-center text-[11px] font-medium uppercase tracking-widest text-gray-400"
+        >
           Don't have an account?{" "}
           <Link
             href="/register"
-            className="font-semibold text-black hover:underline underline-offset-4"
+            className="font-black text-black hover:underline underline-offset-4"
           >
             Sign up for free
           </Link>
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
     </div>
   );
 };
