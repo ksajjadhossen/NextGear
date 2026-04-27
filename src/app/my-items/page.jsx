@@ -1,10 +1,13 @@
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import MyItems from "@/components/MyItemsPage/MyItemsPage";
 import React from "react";
 
 const page = () => {
   return (
     <div>
-      <MyItems></MyItems>
+      <ProtectedRoute>
+        <MyItems></MyItems>
+      </ProtectedRoute>
     </div>
   );
 };

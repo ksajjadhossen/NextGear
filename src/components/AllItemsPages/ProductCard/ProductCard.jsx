@@ -14,7 +14,7 @@ const ProductCard = ({ product }) => {
       className="group relative bg-white border border-slate-100 transition-all duration-500 hover:border-black"
     >
       {/* Product Image Holder */}
-      <div className="relative aspect-[4/5] bg-[#F9F9F9] overflow-hidden flex items-center justify-center">
+      <div className="relative aspect-4/5 bg-[#F9F9F9] overflow-hidden flex items-center justify-center">
         <div className="absolute top-4 left-4 z-10">
           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white bg-black px-2 py-1">
             New Arrival
@@ -25,7 +25,7 @@ const ProductCard = ({ product }) => {
           src={product?.image || "/placeholder-gadget.png"}
           alt={product?.name || "Next Gear Product"}
           fill
-          className="object-cover grayscale-[30%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-[0.8s] ease-in-out"
+          className="object-cover grayscale-30 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-[0.8s] ease-in-out"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority={product.id <= 6}
         />

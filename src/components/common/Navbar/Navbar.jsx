@@ -98,6 +98,7 @@ const Navbar = () => {
                     {link.name}
                   </Link>
                 ))}
+
                 {user && (
                   <Link
                     href="/my-items"
@@ -110,20 +111,19 @@ const Navbar = () => {
                     My Items
                   </Link>
                 )}
-                <ProtectedRoute>
-                  {user && (
-                    <Link
-                      href="/items/add"
-                      className={`text-[13px] font-medium transition-all duration-300 relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-black after:transition-transform after:duration-300 ${
-                        isActive("/items/add")
-                          ? "text-black after:scale-x-100"
-                          : "text-gray-400 after:scale-x-0 hover:text-black hover:after:scale-x-100"
-                      }`}
-                    >
-                      Add Item
-                    </Link>
-                  )}
-                </ProtectedRoute>
+
+                {user && (
+                  <Link
+                    href="/items/add"
+                    className={`text-[13px] font-medium transition-all duration-300 relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-black after:transition-transform after:duration-300 ${
+                      isActive("/items/add")
+                        ? "text-black after:scale-x-100"
+                        : "text-gray-400 after:scale-x-0 hover:text-black hover:after:scale-x-100"
+                    }`}
+                  >
+                    Add Item
+                  </Link>
+                )}
               </div>
 
               {/* Right Section */}

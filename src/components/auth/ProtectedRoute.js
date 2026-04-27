@@ -15,8 +15,8 @@ const ProtectedRoute = ({ children }) => {
 
   if (loading)
     return (
-      <div className="h-screen flex justify-center items-center">
-        Loading...
+      <div className="h-screen flex justify-center items-center font-mono text-xs tracking-widest animate-pulse">
+        AUTHENTICATING...
       </div>
     );
 
