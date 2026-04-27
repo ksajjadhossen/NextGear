@@ -12,7 +12,6 @@ const ProductHeader = ({ productCount, onSortChange }) => {
 
       <div className="flex items-center gap-8 w-full md:w-auto justify-between">
         <div className="relative group">
-          {/* onChange যুক্ত করা হয়েছে */}
           <select
             onChange={(e) => onSortChange(e.target.value)}
             className="appearance-none bg-transparent font-bold focus:outline-none cursor-pointer text-[10px] uppercase tracking-[0.2em] pr-6 text-slate-600 hover:text-black transition-colors"
@@ -31,11 +30,7 @@ const ProductHeader = ({ productCount, onSortChange }) => {
             </svg>
           </div>
         </div>
-
-        {/* View Layout Toggles (আগের মতোই থাকবে) */}
-        <div className="hidden md:flex items-center border-l border-slate-100 pl-8 gap-4">
-          {/* আপনার SVG বাটনগুলো */}
-        </div>
+        <div className="hidden md:flex items-center border-l border-slate-100 pl-8 gap-4"></div>
       </div>
     </div>
   );
