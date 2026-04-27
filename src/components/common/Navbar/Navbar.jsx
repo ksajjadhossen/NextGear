@@ -53,7 +53,7 @@ const Navbar = () => {
                   <Image
                     src="/bgimg.png"
                     alt="Logo"
-                    width={150}
+                    width={70}
                     height={50}
                     priority
                     loading="eager"
