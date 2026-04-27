@@ -1,121 +1,156 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { toast } from "react-hot-toast"; // Success মেসেজের জন্য
+import { FaCloudUploadAlt } from "react-icons/fa";
 
 const AddItemPage = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  // ধরা যাক, আপনার কাছে ইউজার লগ-ইন এর স্টেট আছে
-  const user = true; // এখানে আপনার Firebase User চেক হবে
-
-  useEffect(() => {
-    if (!user) {
-      router.push("/login"); // লগ-ইন না থাকলে রিডাইরেক্ট
-    }
-  }, [user, router]);
+  const [formData, setFormData] = useState({
+    name: "",
+    price: "",
+    category: "Gadget",
+    image:
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000&auto=format&fit=crop", // ডিফল্ট ইমেজ
+    description: "",
+    status: "Active",
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // এখানে আপনার ডাটা অ্যাড করার লজিক (Firebase push)
-    toast.success("ASSET_ADDED_TO_NEXT_GEAR_DATABASE");
+    setLoading(true);
+
+    try {
+      // ১. আগের ডাটা নিয়ে আসা
+      const existingItems =
+        JSON.parse(localStorage.getItem("myInventory")) || [];
+
+      // ২. নতুন ডাটা গুছিয়ে নেওয়া
+      const newItem = {
+        ...formData,
+        id: Date.now(), // ইউনিক আইডি
+        price: parseFloat(formData.price),
+        date: new Date().toLocaleDateString("en-US", {
+          month: "short",
+          day: "2-digit",
+          year: "numeric",
+        }),
+      };
+
+      // ৩. লোকাল স্টোরেজে পুশ করা
+      const updatedItems = [newItem, ...existingItems];
+      localStorage.setItem("myInventory", JSON.stringify(updatedItems));
+
+      // ৪. সাকসেস মেসেজ ও রিডাইরেক্ট
+      setTimeout(() => {
+        setLoading(false);
+        router.push("/my-items");
+      }, 800);
+    } catch (error) {
+      console.error("Error saving data:", error);
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-white py-20 px-6">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="max-w-3xl mx-auto"
+    <div className="max-w-3xl mx-auto px-6 py-16 bg-white min-h-screen">
+      <div className="mb-10 text-center">
+        <h1 className="text-3xl font-black uppercase tracking-tighter text-black">
+          List New Gear
+        </h1>
+        <p className="text-gray-400 text-xs mt-2 uppercase tracking-widest font-bold">
+          Next Gear / Inventory Management
+        </p>
+      </div>
+
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-8 border-t border-black pt-10"
       >
-        {/* Header */}
-        <div className="mb-12 border-l-4 border-black pl-6">
-          <span className="text-[10px] font-black uppercase tracking-[.4em] text-slate-400">
-            Inventory Management
-          </span>
-          <h1 className="text-4xl font-bold tracking-tighter text-black mt-2">
-            ADD_NEW_EQUIPMENT
-          </h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Product Name */}
+          <div className="flex flex-col space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+              Product Name
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. MacBook Pro M3"
+              className="border-b border-gray-200 py-3 outline-none focus:border-black transition-all text-sm font-medium"
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+            />
+          </div>
+
+          {/* Price */}
+          <div className="flex flex-col space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+              Price ($)
+            </label>
+            <input
+              type="number"
+              required
+              placeholder="0.00"
+              className="border-b border-gray-200 py-3 outline-none focus:border-black transition-all text-sm font-medium"
+              onChange={(e) =>
+                setFormData({ ...formData, price: e.target.value })
+              }
+            />
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Title */}
-            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                Product Title
-              </label>
-              <input
-                required
-                type="text"
-                placeholder="e.g., Studio Sub X1"
-                className="border-b-2 border-slate-100 p-3 focus:border-black outline-none transition-colors font-medium"
-              />
-            </div>
-
-            {/* Price */}
-            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                Price (USD)
-              </label>
-              <input
-                required
-                type="number"
-                placeholder="599.00"
-                className="border-b-2 border-slate-100 p-3 focus:border-black outline-none transition-colors font-mono font-bold"
-              />
-            </div>
+        {/* Category & Description */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="flex flex-col space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+              Category
+            </label>
+            <select
+              className="border-b border-gray-200 py-3 outline-none focus:border-black transition-all text-sm font-medium bg-transparent"
+              onChange={(e) =>
+                setFormData({ ...formData, category: e.target.value })
+              }
+            >
+              <option value="Gadget">Gadget</option>
+              <option value="Audio">Audio</option>
+              <option value="Mobile">Mobile</option>
+              <option value="Laptop">Laptop</option>
+            </select>
           </div>
 
-          {/* Short Description */}
-          <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-              Short Summary
+          <div className="flex flex-col space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+              Brief Description
             </label>
             <input
-              required
               type="text"
-              placeholder="1-2 lines for product card"
-              className="border-b-2 border-slate-100 p-3 focus:border-black outline-none transition-colors"
+              placeholder="Short detail about condition..."
+              className="border-b border-gray-200 py-3 outline-none focus:border-black transition-all text-sm font-medium"
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
             />
           </div>
+        </div>
 
-          {/* Full Description */}
-          <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-              Full Architectural Description
-            </label>
-            <textarea
-              rows="4"
-              placeholder="Detailed technical specifications..."
-              className="border-2 border-slate-100 p-4 focus:border-black outline-none transition-colors resize-none"
-            ></textarea>
-          </div>
-
-          {/* Image URL */}
-          <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-              Image Asset URL
-            </label>
-            <input
-              required
-              type="url"
-              placeholder="https://image-link.com/photo.jpg"
-              className="border-b-2 border-slate-100 p-3 focus:border-black outline-none transition-colors"
-            />
-          </div>
-
-          {/* Submit Button */}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full bg-black text-white py-5 text-[11px] font-black uppercase tracking-[0.4em] mt-8"
+        {/* Submit Button */}
+        <div className="pt-10">
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-5 text-[11px] font-black uppercase tracking-[0.3em] transition-all duration-500 shadow-xl ${
+              loading
+                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                : "bg-black text-white hover:bg-zinc-800"
+            }`}
           >
-            Deploy Item to Store
-          </motion.button>
-        </form>
-      </motion.div>
+            {loading ? "Processing_Entry..." : "Confirm & List Item"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
