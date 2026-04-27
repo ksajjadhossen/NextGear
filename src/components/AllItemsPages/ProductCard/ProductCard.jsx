@@ -1,10 +1,11 @@
+import Link from "next/link";
 import React from "react";
 
 const ProductCard = ({ product }) => {
   return (
     <div className="group relative bg-white border border-slate-100 p-0 rounded-none transition-all duration-500 hover:border-black">
       {/* Product Image Holder */}
-      <div className="relative aspect-[4/5] bg-[#F9F9F9] overflow-hidden flex items-center justify-center">
+      <div className="relative aspect-4/5 bg-[#F9F9F9] overflow-hidden flex items-center justify-center">
         {/* Subtle Badge */}
         <div className="absolute top-4 left-4 z-10">
           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white bg-black px-2 py-1">
@@ -15,14 +16,17 @@ const ProductCard = ({ product }) => {
         <img
           src={product?.image || "/placeholder-gadget.png"}
           alt={product?.name || "Next Gear Product"}
-          className="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-[0.8s] ease-in-out"
+          className="w-full h-full object-cover grayscale-30 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-[0.8s] ease-in-out"
         />
 
         {/* Quick View Overlay */}
         <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-          <button className="bg-white text-black text-[10px] font-bold uppercase tracking-widest px-6 py-3 rounded-none translate-y-4 group-hover:translate-y-0 transition-transform duration-500 shadow-xl">
+          <Link
+            href={`/items/${product.id}`}
+            className="bg-white text-black text-[10px] font-bold uppercase tracking-widest px-6 py-3 rounded-none translate-y-4 group-hover:translate-y-0 transition-transform duration-500 shadow-xl inline-block"
+          >
             View Details
-          </button>
+          </Link>
         </div>
       </div>
 
