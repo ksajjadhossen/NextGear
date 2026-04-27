@@ -7,18 +7,17 @@ import Image from "next/image";
 import { useAuth } from "@/context/authContext";
 import { logout } from "@/lib/authOperation";
 import { useRouter } from "next/navigation";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 const Navbar = () => {
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
-  // ডাটা এবং সার্চ স্টেট
   const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
-  // ১. Fetch Method: public/product.json থেকে ডাটা আনা
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -32,7 +31,6 @@ const Navbar = () => {
     fetchProducts();
   }, []);
 
-  // ২. Search Logic: নাম এবং ক্যাটাগরি ফিল্টার
   useEffect(() => {
     if (searchQuery.trim().length > 1) {
       const filtered = products.filter(
@@ -86,7 +84,6 @@ const Navbar = () => {
                 </Link>
               </div>
 
-              {/* Desktop Menu (আপনার আগের নেভ আইটেমগুলো এখানে) */}
               <div className="hidden lg:flex space-x-10 items-center">
                 {navLinks.map((link) => (
                   <Link
@@ -113,6 +110,20 @@ const Navbar = () => {
                     My Items
                   </Link>
                 )}
+                <ProtectedRoute>
+                  {user && (
+                    <Link
+                      href="/items/add"
+                      className={`text-[13px] font-medium transition-all duration-300 relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-black after:transition-transform after:duration-300 ${
+                        isActive("/items/add")
+                          ? "text-black after:scale-x-100"
+                          : "text-gray-400 after:scale-x-0 hover:text-black hover:after:scale-x-100"
+                      }`}
+                    >
+                      Add Item
+                    </Link>
+                  )}
+                </ProtectedRoute>
               </div>
 
               {/* Right Section */}
