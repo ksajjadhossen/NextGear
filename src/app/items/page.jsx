@@ -43,7 +43,7 @@ const Page = () => {
         {/* Right Side: Product Area */}
         <div className="flex-1">
           {/*Header section provides count and sort options */}
-          <ProductHeader count={products.length} />
+          <ProductHeader productCount={products.length} />
 
           {/* Product Grid / Empty State logic */}
           {products.length > 0 ? (
@@ -56,7 +56,7 @@ const Page = () => {
             <EmptyState />
           )}
 
-          <Pagination />
+          <Pagination items={products} />
         </div>
       </div>
     </div>

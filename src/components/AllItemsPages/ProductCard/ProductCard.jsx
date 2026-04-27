@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
@@ -12,11 +13,13 @@ const ProductCard = ({ product }) => {
             New Arrival
           </span>
         </div>
-
-        <img
+        <Image
           src={product?.image || "/placeholder-gadget.png"}
           alt={product?.name || "Next Gear Product"}
-          className="w-full h-full object-cover grayscale-30 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-[0.8s] ease-in-out"
+          fill
+          className="object-cover grayscale-30 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-[0.8s] ease-in-out"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          priority={product.id <= 6}
         />
 
         {/* Quick View Overlay */}

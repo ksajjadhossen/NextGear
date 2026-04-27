@@ -1,13 +1,13 @@
 import React from "react";
 
-const ProductHeader = () => {
+const ProductHeader = ({ productCount }) => {
   return (
     <div className="flex flex-col md:flex-row justify-between items-center py-5 border-b border-slate-100 mb-12 gap-4">
       {/* Product Count with Technical Style */}
       <div className="flex items-center gap-3">
         <div className="w-1.5 h-1.5 bg-black rounded-none"></div>
         <p className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
-          Showing <span className="text-black">24</span> RESULTS
+          Showing <span className="text-black">{productCount}</span> RESULTS
         </p>
       </div>
 

@@ -1,14 +1,14 @@
 import React from "react";
 
-const Pagination = () => {
+const Pagination = ({ items }) => {
   return (
     <div className="flex flex-col items-center justify-center mt-24 mb-20 gap-6">
       {/* Subtle Progress Indicator */}
       <div className="flex flex-col items-center gap-2">
         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
-          Viewing 24 of 120 Products
+          Viewing {items.length} of {items.length} Products
         </p>
-        <div className="w-48 h-[1px] bg-slate-100 relative">
+        <div className="w-48 h-px bg-slate-100 relative">
           <div className="absolute left-0 top-0 h-full bg-black w-1/5 transition-all duration-1000"></div>
         </div>
       </div>

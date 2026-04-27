@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 const Hero = ({ imageUrl }) => {
@@ -28,12 +29,18 @@ const Hero = ({ imageUrl }) => {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <button className="px-10 py-4 bg-black text-white text-[11px] font-bold uppercase tracking-widest rounded-sm hover:bg-slate-800 transition-all duration-500">
+          <Link
+            href="/items"
+            className="px-10 py-4 bg-black text-white text-[11px] font-bold uppercase tracking-widest rounded-sm hover:bg-slate-800 transition-all duration-500"
+          >
             Explore Collection
-          </button>
-          <button className="px-10 py-4 border border-slate-200 text-black text-[11px] font-bold uppercase tracking-widest rounded-sm hover:border-black transition-all duration-500">
+          </Link>
+          <Link
+            href="/philosophy"
+            className="px-10 py-4 border border-slate-200 text-black text-[11px] font-bold uppercase tracking-widest rounded-sm hover:border-black transition-all duration-500"
+          >
             Our Philosophy
-          </button>
+          </Link>
         </div>
       </div>
 
