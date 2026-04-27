@@ -14,7 +14,6 @@ const Page = () => {
     fetch("/product.json")
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setProducts(data);
         setLoading(false);
       })
@@ -23,6 +22,22 @@ const Page = () => {
         setLoading(false);
       });
   }, []);
+
+  const handleSort = (sortType) => {
+    let sortedProducts = [...products];
+
+    if (sortType === "PRICE / ASCENDING") {
+      sortedProducts.sort((a, b) => a.price - b.price);
+    } else if (sortType === "PRICE / DESCENDING") {
+      sortedProducts.sort((a, b) => b.price - a.price);
+    } else if (sortType === "RATING / HIGHEST") {
+      sortedProducts.sort((a, b) => b.rating - a.rating);
+    } else if (sortType === "SORT / NEWEST ARRIVALS") {
+      sortedProducts.sort((a, b) => b.id - a.id);
+    }
+
+    setProducts(sortedProducts);
+  };
 
   if (loading) {
     return (
@@ -37,15 +52,13 @@ const Page = () => {
   return (
     <div className="max-w-7xl mx-auto px-6 py-20">
       <div className="flex flex-col lg:flex-row gap-12">
-        {/* Left Side: Filters */}
         <FilterSidebar />
-
-        {/* Right Side: Product Area */}
         <div className="flex-1">
-          {/*Header section provides count and sort options */}
-          <ProductHeader productCount={products.length} />
+          <ProductHeader
+            productCount={products.length}
+            onSortChange={handleSort}
+          />
 
-          {/* Product Grid / Empty State logic */}
           {products.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
               {products.map((item) => (
