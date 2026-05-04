@@ -184,6 +184,7 @@ const AddItemPage = () => {
               >
                 <option value="Wearables">Wearables</option>
                 <option value="Audio">Audio</option>
+                <option value="Accessories">Accessories</option>
                 <option value="Laptops">Laptops</option>
               </select>
             </div>
