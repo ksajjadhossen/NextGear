@@ -20,7 +20,7 @@ const Page = () => {
   const [sortType, setSortType] = useState("SORT / NEWEST ARRIVALS");
 
   useEffect(() => {
-    fetch("https://next-gear-iota.vercel.app/api/products")
+    fetch("/api/products")
       .then((res) => res.json())
       .then((data) => {
         setAllProducts(data);

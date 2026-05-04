@@ -7,7 +7,6 @@ import Image from "next/image";
 import { useAuth } from "@/context/authContext";
 import { logout } from "@/lib/authOperation";
 import { useRouter } from "next/navigation";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 const Navbar = () => {
   const { user } = useAuth();
@@ -21,7 +20,12 @@ const Navbar = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("/product.json");
+        const response = await fetch("/api/products");
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
         const data = await response.json();
         setProducts(data);
       } catch (error) {

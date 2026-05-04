@@ -7,8 +7,11 @@ const FeaturedProductGrid = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    fetch("https://next-gear-iota.vercel.app/api/products")
-      .then((res) => res.json())
+    fetch("/api/products")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch products");
+        return res.json();
+      })
       .then((data) => {
         setProducts(data.slice(0, 3));
         setLoading(false);
