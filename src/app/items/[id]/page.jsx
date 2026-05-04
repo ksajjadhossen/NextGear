@@ -7,6 +7,7 @@ import { FiArrowLeft, FiChevronRight } from "react-icons/fi";
 import ProductCard from "@/components/AllItemsPages/ProductCard/ProductCard"; // Related items এর জন্য
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "@/lib/firebase";
+import toast from "react-hot-toast";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -59,17 +60,28 @@ const ProductDetails = () => {
     );
   const handleAddToWishlist = async (productData) => {
     if (!currentUserEmail) {
-      alert("Please login first!");
+      toast.error("Please login to curate your wishlist", {
+        style: {
+          borderRadius: "0px",
+          background: "#000",
+          color: "#fff",
+          fontSize: "12px",
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
+        },
+      });
       return;
     }
+
+    const toastId = toast.loading("Adding to wishlist...");
 
     try {
       const response = await fetch("/api/wishlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userEmail: currentUserEmail, // ডায়নামিক ইমেইল
-          productId: productData.id, // আপনার JSON অনুযায়ী 'id'
+          userEmail: currentUserEmail,
+          productId: String(productData.id || productData._id),
           productName: productData.name,
           category: productData.category,
           price: productData.price,
@@ -78,13 +90,31 @@ const ProductDetails = () => {
       });
 
       const data = await response.json();
+
       if (response.ok) {
-        alert("Added to wishlist!");
+        toast.success("Added to your collection", {
+          id: toastId,
+          style: {
+            borderRadius: "0px",
+            background: "#000",
+            color: "#fff",
+            fontSize: "12px",
+          },
+        });
       } else {
-        alert(data.message || "Error adding item");
+        toast.error(data.message || "Remove operation failed", {
+          id: toastId,
+          style: {
+            borderRadius: "0px",
+            background: "#000",
+            color: "#fff",
+            fontSize: "12px",
+          },
+        });
       }
     } catch (error) {
       console.error("Wishlist Error:", error);
+      toast.error("Connection error", { id: toastId });
     }
   };
 
@@ -102,12 +132,12 @@ const ProductDetails = () => {
       <div className="grid lg:grid-cols-2 gap-20 items-start">
         {/* Left: Product Image Section */}
         <div className="space-y-6">
-          <div className="aspect-[4/5] bg-[#F9F9F9] relative overflow-hidden group">
+          <div className="aspect-4/5 bg-[#F9F9F9] relative overflow-hidden group">
             <Image
               src={product.image}
               alt={product.name}
               fill
-              className="object-contain p-12 grayscale-[20%] group-hover:grayscale-0 transition-all duration-700"
+              className="object-contain p-12 grayscale-20 group-hover:grayscale-0 transition-all duration-700"
             />
           </div>
           <div className="grid grid-cols-4 gap-4">

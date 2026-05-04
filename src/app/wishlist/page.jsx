@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "@/lib/firebase";
+import toast from "react-hot-toast";
 
 const WishlistPage = () => {
   const [wishlistItems, setWishlistItems] = useState([]);
@@ -24,25 +25,30 @@ const WishlistPage = () => {
     const fetchWishlistData = async (email) => {
       try {
         setLoading(true);
-
         const [wishlistRes, productsRes] = await Promise.all([
           fetch(`/api/wishlist?email=${email}`),
           fetch("/api/products"),
         ]);
+
+        if (!wishlistRes.ok || !productsRes.ok)
+          throw new Error("Failed to fetch");
 
         const wishlistData = await wishlistRes.json();
         const allProducts = await productsRes.json();
 
         const populatedWishlist = wishlistData.map((wishItem) => {
           const productDetails = allProducts.find(
-            (p) => p.id === wishItem.productId || p._id === wishItem.productId,
+            (p) =>
+              String(p.id) === String(wishItem.productId) ||
+              String(p._id) === String(wishItem.productId),
           );
-          return productDetails ? { ...wishItem, ...productDetails } : wishItem;
+          return productDetails ? { ...productDetails, ...wishItem } : wishItem;
         });
 
         setWishlistItems(populatedWishlist);
       } catch (err) {
         console.error("Wishlist loading error:", err.message);
+        toast.error("Could not load your wishlist");
       } finally {
         setLoading(false);
       }
@@ -52,36 +58,35 @@ const WishlistPage = () => {
   }, [auth, router]);
 
   const handleRemove = async (productId) => {
-    if (!user) return;
+    if (!user) return toast.error("Please login first");
 
+    const originalItems = [...wishlistItems];
     const updatedList = wishlistItems.filter(
-      (item) => item.id !== productId && item.productId !== productId,
+      (item) => String(item.productId) !== String(productId),
     );
     setWishlistItems(updatedList);
 
     try {
-      await fetch(`/api/wishlists`, {
+      const res = await fetch(`/api/wishlist`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userEmail: user.email, productId }),
+        body: JSON.stringify({
+          userEmail: user.email,
+          productId: String(productId),
+        }),
       });
+
+      if (res.ok) {
+        toast.success("Item removed from Wishlist");
+      } else {
+        throw new Error();
+      }
     } catch (err) {
       console.error("Failed to remove item:", err);
+      setWishlistItems(originalItems);
+      toast.error("Failed to sync with database");
     }
   };
-
-  if (loading) {
-    return (
-      <div className="bg-white min-h-screen flex items-center justify-center font-sans">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-t-transparent border-black rounded-full animate-spin"></div>
-          <p className="text-black uppercase tracking-[0.4em] text-[10px] font-bold">
-            Finding your wishlist...
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-white min-h-screen p-8 font-sans text-black">
@@ -114,7 +119,7 @@ const WishlistPage = () => {
             </svg>
           </div>
           <h2 className="text-xl font-light uppercase tracking-widest text-black mb-2">
-            Your archive is empty
+            Your wishlist is empty
           </h2>
           <p className="text-gray-400 text-xs uppercase tracking-widest mb-8 max-w-xs leading-relaxed">
             Begin your journey by adding pieces to your private collection.
