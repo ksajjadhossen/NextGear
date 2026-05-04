@@ -153,7 +153,7 @@ const WishlistPage = () => {
               </button>
 
               {/* Product Image */}
-              <div className="relative aspect-[3/4] mb-6 overflow-hidden bg-[#F9F9F9]">
+              <div className="relative aspect-3/4 mb-6 overflow-hidden bg-[#F9F9F9]">
                 <img
                   src={
                     item.image ||
