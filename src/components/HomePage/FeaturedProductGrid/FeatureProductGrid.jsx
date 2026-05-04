@@ -1,52 +1,33 @@
+"use client";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
 const FeaturedProductGrid = () => {
-  const products = [
-    {
-      id: 1,
-      name: "CORE SERIES V3",
-      price: 299,
-      category: "WEARABLES",
-      image:
-        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop",
-      brand: "Next Gear",
-      stock: 12,
-      rating: 4.5,
-      description: "Industrial grade wearable tracking tech.",
-      warranty: "2 Years",
-      releaseDate: "2025-11-10",
-    },
-    {
-      id: 2,
-      name: "NEXT GEN AUDIO",
-      price: 159,
-      category: "ACCESSORIES",
-      image:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop",
-      brand: "Sonic",
-      stock: 25,
-      rating: 4.8,
-      description: "High-fidelity wireless audio experience.",
-      warranty: "1 Year",
-      releaseDate: "2026-01-15",
-    },
-    {
-      id: 3,
-      name: "LEATHER SHELL",
-      price: 49,
-      category: "PROTECTION",
-      image:
-        "https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?q=80&w=800&auto=format&fit=crop",
-      brand: "Armor",
-      stock: 50,
-      rating: 4.2,
-      description: "Premium handcrafted leather protection.",
-      warranty: "6 Months",
-      releaseDate: "2025-12-01",
-    },
-  ];
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    fetch("https://next-gear-iota.vercel.app/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        setProducts(data.slice(0, 3));
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error loading featured products:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <p className="text-[10px] font-black uppercase tracking-[0.5em] animate-pulse">
+          Loading Featured Products...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <section className="py-24 bg-white">
