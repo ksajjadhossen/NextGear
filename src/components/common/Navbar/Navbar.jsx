@@ -151,7 +151,7 @@ const Navbar = () => {
                       {searchResults.map((product) => (
                         <Link
                           key={product.id}
-                          href={`/items/${product.id}`}
+                          href={`/items/${product._id}`}
                           onClick={() => setSearchQuery("")}
                           className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50"
                         >
@@ -280,8 +280,8 @@ const Navbar = () => {
               <div className="mt-2 bg-white border border-gray-100 rounded-xl max-h-48 overflow-y-auto">
                 {searchResults.map((product) => (
                   <Link
-                    key={product.id}
-                    href={`/items/${product.id}`}
+                    key={product._id}
+                    href={`/items/${product._id}`}
                     onClick={() => {
                       setSearchQuery("");
                       document.getElementById("my-drawer").checked = false;
