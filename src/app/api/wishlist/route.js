@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import connectDB from "@/lib/mongodb";
+import wishlistModel from "@/app/models/wishlist.model";
 
 export async function GET(request) {
   try {
@@ -16,23 +17,48 @@ export async function GET(request) {
       );
     }
 
-    // আপনার ডাটাবেস অবজেক্টটি সরাসরি নেওয়া হচ্ছে
     const db = mongoose.connection.db;
 
-    // স্ক্রিনশট অনুযায়ী কালেকশন নাম 'wishlist'
-    // এবং ফিল্ডের নাম 'userEmail' হুবহু মিল থাকতে হবে
     const wishlistItems = await db
-      .collection("wishlist")
+      .collection("wishlists")
       .find({ userEmail: email })
       .toArray();
 
-    console.log(`Found ${wishlistItems.length} items for email: ${email}`);
-
     return NextResponse.json(wishlistItems);
   } catch (error) {
-    console.error("Wishlist API Error:", error);
+    console.error("Wishlist GET API Error:", error);
     return NextResponse.json(
       { error: "Internal Server Error", details: error.message },
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST(request) {
+  try {
+    await connectDB();
+    const body = await request.json();
+
+    console.log("Incoming Wishlist Data:", body);
+
+    const existing = await wishlistModel.findOne({
+      userEmail: body.userEmail,
+      productId: body.productId,
+    });
+
+    if (existing) {
+      return NextResponse.json(
+        { message: "Item already in wishlist" },
+        { status: 400 },
+      );
+    }
+
+    const newItem = await wishlistModel.create(body);
+    return NextResponse.json(newItem, { status: 201 });
+  } catch (error) {
+    console.error("Wishlist POST Error Detail:", error.message);
+    return NextResponse.json(
+      { message: "Server Error", error: error.message },
       { status: 500 },
     );
   }

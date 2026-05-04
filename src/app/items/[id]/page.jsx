@@ -5,6 +5,8 @@ import { useParams, useRouter } from "next/navigation"; // useRouter যোগ �
 import Link from "next/link";
 import { FiArrowLeft, FiChevronRight } from "react-icons/fi";
 import ProductCard from "@/components/AllItemsPages/ProductCard/ProductCard"; // Related items এর জন্য
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import app from "@/lib/firebase";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -12,6 +14,18 @@ const ProductDetails = () => {
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserEmail, setCurrentUserEmail] = useState(null);
+  const auth = getAuth(app);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUserEmail(user.email);
+      } else {
+        setCurrentUserEmail(null);
+      }
+    });
+    return () => unsubscribe();
+  }, [auth]);
 
   useEffect(() => {
     fetch("/product.json")
@@ -43,6 +57,36 @@ const ProductDetails = () => {
         ERROR_404: ASSET_NOT_FOUND
       </div>
     );
+  const handleAddToWishlist = async (productData) => {
+    if (!currentUserEmail) {
+      alert("Please login first!");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/wishlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userEmail: currentUserEmail, // ডায়নামিক ইমেইল
+          productId: productData.id, // আপনার JSON অনুযায়ী 'id'
+          productName: productData.name,
+          category: productData.category,
+          price: productData.price,
+          image: productData.image,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Added to wishlist!");
+      } else {
+        alert(data.message || "Error adding item");
+      }
+    } catch (error) {
+      console.error("Wishlist Error:", error);
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12 lg:py-24 bg-white">
@@ -148,7 +192,10 @@ const ProductDetails = () => {
             <button className="flex-1 bg-black text-white px-12 py-5 text-[11px] font-black uppercase tracking-[0.3em] hover:bg-slate-800 transition-all active:scale-[0.98]">
               Acquire Now
             </button>
-            <button className="flex-1 bg-white text-black border border-slate-200 px-12 py-5 text-[11px] font-black uppercase tracking-[0.3em] hover:border-black transition-all active:scale-[0.98]">
+            <button
+              onClick={() => handleAddToWishlist(product)}
+              className="flex-1 bg-white text-black border border-slate-200 px-12 py-5 text-[11px] font-black uppercase tracking-[0.3em] hover:border-black transition-all active:scale-[0.98]"
+            >
               Add to Wishlist
             </button>
           </div>

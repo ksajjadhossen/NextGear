@@ -60,7 +60,7 @@ const WishlistPage = () => {
     setWishlistItems(updatedList);
 
     try {
-      await fetch(`/api/wishlist`, {
+      await fetch(`/api/wishlists`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userEmail: user.email, productId }),

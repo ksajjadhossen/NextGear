@@ -178,12 +178,11 @@ const Navbar = () => {
                 </div>
 
                 <button
-                  cursor-pointer
                   onClick={() => router.push("/wishlist")}
-                  className="p-2"
+                  className="p-2 cursor-pointer transition-colors duration-300"
                 >
                   <FaRegHeart
-                    className={`${isActive("/wishlist") ? "text-red-500" : "text-gray-400"} text-lg hover:text-red-500 transition-colors duration-300 cursor-pointer`}
+                    className={`${isActive("/wishlist") ? "text-red-500" : "text-gray-400"} text-lg hover:text-red-500 transition-colors duration-300 `}
                   />
                 </button>
 
