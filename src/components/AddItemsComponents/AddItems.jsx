@@ -1,21 +1,43 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast"; // ১. ইমপোর্ট করুন
+import toast from "react-hot-toast";
 
 const AddItemPage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [tagInput, setTagInput] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
+    category: "Wearables",
     price: "",
-    category: "Gadget",
-    image:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000&auto=format&fit=crop",
+    brand: "Next Gear",
+    stock: "12",
+    rating: 4.5,
+    image: "",
     description: "",
-    status: "Active",
+    warranty: "2 Years",
+    tags: [], // New tags array
   });
+
+  // Handle Tag Logic
+  const addTag = (e) => {
+    if (e.key === "Enter" && tagInput.trim()) {
+      e.preventDefault();
+      if (!formData.tags.includes(tagInput.trim())) {
+        setFormData({ ...formData, tags: [...formData.tags, tagInput.trim()] });
+      }
+      setTagInput("");
+    }
+  };
+
+  const removeTag = (indexToRemove) => {
+    setFormData({
+      ...formData,
+      tags: formData.tags.filter((_, index) => index !== indexToRemove),
+    });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -28,135 +50,220 @@ const AddItemPage = () => {
       const newItem = {
         ...formData,
         id: Date.now(),
+        _id: `obj_${Math.random().toString(36).substr(2, 9)}`,
         price: parseFloat(formData.price),
-        date: new Date().toLocaleDateString("en-US", {
-          month: "short",
-          day: "2-digit",
-          year: "numeric",
-        }),
+        stock: parseInt(formData.stock),
+        rating: parseFloat(formData.rating),
+        releasedDate: new Date().toISOString().split("T")[0],
       };
 
       const updatedItems = [newItem, ...existingItems];
       localStorage.setItem("myInventory", JSON.stringify(updatedItems));
 
-      // ২. সাকসেস টোস্ট মেসেজ
-      toast.success(`${formData.name} added to inventory!`, {
-        style: {
-          borderRadius: "0px",
-          background: "#000",
-          color: "#fff",
-          fontSize: "12px",
-          fontWeight: "bold",
-          letterSpacing: "1px",
-          textTransform: "uppercase",
-        },
-      });
+      toast.success(`${formData.name} DEPLOYED TO NEXT-GEAR`);
 
       setTimeout(() => {
         setLoading(false);
         router.push("/my-items");
-      }, 1200);
+      }, 1000);
     } catch (error) {
-      console.error("Error saving data:", error);
       setLoading(false);
-      // ৩. এরর টোস্ট মেসেজ
-      toast.error("Failed to add item. Please try again.");
+      toast.error("DATABASE_SYNC_ERROR");
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16 bg-white min-h-screen">
-      <div className="mb-10 text-center">
-        <h1 className="text-3xl font-black uppercase tracking-tighter text-black">
-          List New Gear
+    <div className="max-w-5xl mx-auto px-6 py-16 bg-white min-h-screen">
+      <div className="mb-12">
+        <h1 className="text-4xl font-black uppercase tracking-tighter italic">
+          Create_Entry
         </h1>
-        <p className="text-gray-400 text-xs mt-2 uppercase tracking-widest font-bold">
-          Next Gear / Inventory Management
+        <p className="text-[9px] text-gray-400 tracking-[0.4em] font-bold mt-2">
+          LOCAL_STORAGE / CLUSTER-0 / INVENTORY
         </p>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-8 border-t border-black pt-10"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="flex flex-col space-y-2">
+      <form onSubmit={handleSubmit} className="space-y-12">
+        {/* Top Section: Media & Primary Details */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* Image Upload Area */}
+          <div className="lg:col-span-4 space-y-4">
             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-              Product Name
+              Media Asset
             </label>
+            <div className="aspect-square w-full bg-zinc-50 border border-zinc-100 flex items-center justify-center overflow-hidden grayscale hover:grayscale-0 transition-all duration-500">
+              {formData.image ? (
+                <img
+                  src={formData.image}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-center p-8">
+                  <div className="w-8 h-[1px] bg-zinc-300 mx-auto mb-2"></div>
+                  <span className="text-[9px] text-zinc-400 uppercase tracking-tighter">
+                    Waiting for URL...
+                  </span>
+                </div>
+              )}
+            </div>
+            <input
+              type="url"
+              required
+              placeholder="Paste Image URL"
+              className="w-full border-b border-zinc-200 py-3 outline-none focus:border-black text-[11px] font-mono"
+              onChange={(e) =>
+                setFormData({ ...formData, image: e.target.value })
+              }
+            />
+          </div>
+
+          {/* Core Info */}
+          <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+            <div className="flex flex-col space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                Product Identity
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="Item Name"
+                className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm font-bold uppercase"
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+              />
+            </div>
+            <div className="flex flex-col space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                Price (USD)
+              </label>
+              <input
+                type="number"
+                required
+                placeholder="00.00"
+                className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm font-bold"
+                onChange={(e) =>
+                  setFormData({ ...formData, price: e.target.value })
+                }
+              />
+            </div>
+            <div className="flex flex-col space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                Category
+              </label>
+              <select
+                className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm font-bold bg-transparent"
+                onChange={(e) =>
+                  setFormData({ ...formData, category: e.target.value })
+                }
+              >
+                <option value="Wearables">Wearables</option>
+                <option value="Audio">Audio</option>
+                <option value="Laptops">Laptops</option>
+              </select>
+            </div>
+            <div className="flex flex-col space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                Brand Provider
+              </label>
+              <input
+                type="text"
+                defaultValue="Next Gear"
+                className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm font-bold"
+                onChange={(e) =>
+                  setFormData({ ...formData, brand: e.target.value })
+                }
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Section: Metadata & Tags */}
+        <div className="space-y-10 pt-10 border-t border-zinc-100">
+          {/* Tags Input */}
+          <div className="flex flex-col space-y-4">
+            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+              Classification Tags
+            </label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {formData.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="bg-black text-white text-[9px] px-3 py-1 uppercase font-bold flex items-center gap-2 group cursor-pointer"
+                  onClick={() => removeTag(index)}
+                >
+                  {tag}{" "}
+                  <span className="opacity-50 group-hover:opacity-100">×</span>
+                </span>
+              ))}
+            </div>
             <input
               type="text"
-              required
-              placeholder="e.g. MacBook Pro M3"
-              className="border-b border-gray-200 py-3 outline-none focus:border-black transition-all text-sm font-medium"
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
+              value={tagInput}
+              onKeyDown={addTag}
+              placeholder="Type tag and press Enter..."
+              className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm"
+              onChange={(e) => setTagInput(e.target.value)}
             />
           </div>
 
-          <div className="flex flex-col space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-              Price ($)
-            </label>
-            <input
-              type="number"
-              required
-              placeholder="0.00"
-              className="border-b border-gray-200 py-3 outline-none focus:border-black transition-all text-sm font-medium"
-              onChange={(e) =>
-                setFormData({ ...formData, price: e.target.value })
-              }
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div className="flex flex-col space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                Description
+              </label>
+              <input
+                type="text"
+                placeholder="Brief summary of product features..."
+                className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm"
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="flex flex-col space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                  Stock
+                </label>
+                <input
+                  type="number"
+                  defaultValue="12"
+                  className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm font-bold"
+                  onChange={(e) =>
+                    setFormData({ ...formData, stock: e.target.value })
+                  }
+                />
+              </div>
+              <div className="flex flex-col space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                  Warranty
+                </label>
+                <input
+                  type="text"
+                  defaultValue="2 Years"
+                  className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm font-bold"
+                  onChange={(e) =>
+                    setFormData({ ...formData, warranty: e.target.value })
+                  }
+                />
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="flex flex-col space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-              Category
-            </label>
-            <select
-              className="border-b border-gray-200 py-3 outline-none focus:border-black transition-all text-sm font-medium bg-transparent"
-              onChange={(e) =>
-                setFormData({ ...formData, category: e.target.value })
-              }
-            >
-              <option value="Gadget">Gadget</option>
-              <option value="Audio">Audio</option>
-              <option value="Mobile">Mobile</option>
-              <option value="Laptop">Laptop</option>
-            </select>
-          </div>
-
-          <div className="flex flex-col space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-              Brief Description
-            </label>
-            <input
-              type="text"
-              placeholder="Short detail about condition..."
-              className="border-b border-gray-200 py-3 outline-none focus:border-black transition-all text-sm font-medium"
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-            />
-          </div>
-        </div>
-
-        <div className="pt-10">
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full py-5 text-[11px] font-black uppercase tracking-[0.3em] transition-all duration-500 shadow-xl ${
-              loading
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                : "bg-black text-white hover:bg-zinc-800"
-            }`}
-          >
-            {loading ? "Processing_Entry..." : "Confirm & List Item"}
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full py-6 text-[12px] font-black uppercase tracking-[0.6em] transition-all duration-500 ${
+            loading
+              ? "bg-zinc-100 text-zinc-400"
+              : "bg-black text-white hover:bg-zinc-900 shadow-[0_20px_50px_rgba(0,0,0,0.15)]"
+          }`}
+        >
+          {loading ? "PROCESSING_CORE..." : "Push to Database"}
+        </button>
       </form>
     </div>
   );
