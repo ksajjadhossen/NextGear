@@ -29,18 +29,22 @@ const ProductDetails = () => {
   }, [auth]);
 
   useEffect(() => {
-    fetch("/product.json")
+    fetch("/api/products")
       .then((res) => res.json())
       .then((data) => {
-        const found = data.find((p) => p.id === parseInt(id));
+        const found = data.find((p) => p._id === id);
         setProduct(found);
 
         if (found) {
           const related = data
-            .filter((p) => p.category === found.category && p.id !== found.id)
+            .filter((p) => p.category === found.category && p._id !== found._id)
             .slice(0, 3);
           setRelatedProducts(related);
         }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Fetch error:", err);
         setLoading(false);
       });
   }, [id]);

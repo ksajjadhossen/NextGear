@@ -33,7 +33,7 @@ const ProductCard = ({ product }) => {
         {/* Quick View Overlay */}
         <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center backdrop-blur-[2px]">
           <Link
-            href={`/items/${product.id}`}
+            href={`/items/${product._id}`}
             className="bg-white text-black text-[10px] font-bold uppercase tracking-widest px-8 py-4 rounded-none translate-y-4 group-hover:translate-y-0 transition-all duration-500 shadow-2xl hover:bg-black hover:text-white"
           >
             View Details

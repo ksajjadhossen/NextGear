@@ -21,42 +21,52 @@ const Page = () => {
 
   useEffect(() => {
     fetch("/api/products")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+      })
       .then((data) => {
-        setAllProducts(data);
+        setAllProducts(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch((err) => {
         console.error("Error loading products:", err);
+        setAllProducts([]);
         setLoading(false);
       });
   }, []);
 
   const filteredAndSortedProducts = useMemo(() => {
+    if (!allProducts || !Array.isArray(allProducts)) return [];
+
     let result = allProducts.filter((product) => {
-      const matchesSearch = product.name
-        .toLowerCase()
-        .includes(filters.search.toLowerCase());
+      const matchesSearch =
+        product.name?.toLowerCase().includes(filters.search.toLowerCase()) ||
+        false;
       const matchesCategory =
         filters.category === "All Products" ||
         product.category === filters.category;
-      const matchesPrice = product.price <= filters.maxPrice;
-      const matchesStock = filters.inStock ? product.stock > 0 : true;
+      const matchesPrice = Number(product.price) <= filters.maxPrice;
+      const matchesStock = filters.inStock ? Number(product.stock) > 0 : true;
 
       return matchesSearch && matchesCategory && matchesPrice && matchesStock;
     });
 
+    const finalResult = [...result];
+
     if (sortType === "PRICE / ASCENDING") {
-      result.sort((a, b) => a.price - b.price);
+      finalResult.sort((a, b) => Number(a.price) - Number(b.price));
     } else if (sortType === "PRICE / DESCENDING") {
-      result.sort((a, b) => b.price - a.price);
+      finalResult.sort((a, b) => Number(b.price) - Number(a.price));
     } else if (sortType === "RATING / HIGHEST") {
-      result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      finalResult.sort(
+        (a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0),
+      );
     } else if (sortType === "SORT / NEWEST ARRIVALS") {
-      result.sort((a, b) => b.id - a.id);
+      finalResult.sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0));
     }
 
-    return result;
+    return finalResult;
   }, [allProducts, filters, sortType]);
 
   const handleReset = () => {
@@ -133,7 +143,7 @@ const Page = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
                 {filteredAndSortedProducts.map((item, index) => (
                   <motion.div
-                    key={item.id}
+                    key={item.id || item._id || index}
                     variants={{
                       hidden: { opacity: 0, y: 20 },
                       visible: { opacity: 1, y: 0 },

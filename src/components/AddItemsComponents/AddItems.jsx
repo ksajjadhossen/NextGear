@@ -18,10 +18,9 @@ const AddItemPage = () => {
     image: "",
     description: "",
     warranty: "2 Years",
-    tags: [], // New tags array
+    tags: [],
   });
 
-  // Handle Tag Logic
   const addTag = (e) => {
     if (e.key === "Enter" && tagInput.trim()) {
       e.preventDefault();
@@ -39,28 +38,51 @@ const AddItemPage = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    // async যোগ করা হয়েছে
     e.preventDefault();
     setLoading(true);
 
     try {
-      const existingItems =
-        JSON.parse(localStorage.getItem("myInventory")) || [];
-
       const newItem = {
         ...formData,
-        id: Date.now(),
-        _id: `obj_${Math.random().toString(36).substr(2, 9)}`,
-        price: parseFloat(formData.price),
-        stock: parseInt(formData.stock),
-        rating: parseFloat(formData.rating),
+        id: Number(
+          Date.now().toString().slice(-6) +
+            Math.floor(1000 + Math.random() * 9000),
+        ),
+        price: parseFloat(formData.price) || 0,
+        stock: parseInt(formData.stock) || 0,
+        rating: parseFloat(formData.rating) || 4.5,
         releasedDate: new Date().toISOString().split("T")[0],
       };
 
-      const updatedItems = [newItem, ...existingItems];
-      localStorage.setItem("myInventory", JSON.stringify(updatedItems));
+      console.log("Attempting to push to database:", newItem);
 
-      toast.success(`${formData.name} DEPLOYED TO NEXT-GEAR`);
+      const response = await fetch("/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newItem),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.details || "Failed to sync with database");
+      }
+
+      console.log("Database Sync Successful:", result);
+
+      toast.success(`${formData.name.toUpperCase()} DEPLOYED TO CLOUD`, {
+        style: {
+          borderRadius: "0px",
+          background: "#000",
+          color: "#fff",
+          fontSize: "11px",
+          letterSpacing: "0.1em",
+        },
+      });
 
       setTimeout(() => {
         setLoading(false);
@@ -68,7 +90,8 @@ const AddItemPage = () => {
       }, 1000);
     } catch (error) {
       setLoading(false);
-      toast.error("DATABASE_SYNC_ERROR");
+      toast.error(error.message || "DATABASE_SYNC_ERROR");
+      console.error("Submission Error:", error);
     }
   };
 
@@ -100,7 +123,7 @@ const AddItemPage = () => {
                 />
               ) : (
                 <div className="text-center p-8">
-                  <div className="w-8 h-[1px] bg-zinc-300 mx-auto mb-2"></div>
+                  <div className="w-8 h-px bg-zinc-300 mx-auto mb-2"></div>
                   <span className="text-[9px] text-zinc-400 uppercase tracking-tighter">
                     Waiting for URL...
                   </span>
@@ -141,6 +164,7 @@ const AddItemPage = () => {
               <input
                 type="number"
                 required
+                step="0.01"
                 placeholder="00.00"
                 className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm font-bold"
                 onChange={(e) =>

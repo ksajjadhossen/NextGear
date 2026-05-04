@@ -1,21 +1,36 @@
 import { NextResponse } from "next/server";
-
-import mongoose from "mongoose";
-import connectDB from "../../../lib/mongodb";
-
-const ProductSchema = new mongoose.Schema({}, { strict: false });
-const Product =
-  mongoose.models.products || mongoose.model("products", ProductSchema);
+import connectDB from "@/lib/mongodb";
+import Product from "@/app/models/product.model";
 
 export async function GET() {
   try {
     await connectDB();
-
-    const products = await Product.find({});
-
-    return NextResponse.json(products);
+    const items = await Product.find({}).sort({ createdAt: -1 }); // নতুনগুলো আগে দেখাবে
+    return NextResponse.json(items);
   } catch (error) {
-    console.error("Error fetching products:", error);
-    return NextResponse.json({ error: "Data fetch failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch items" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST(request) {
+  console.log("Here is Request", request);
+  try {
+    await connectDB();
+
+    const body = await request.json();
+
+    const newItem = await Product.create(body);
+    console.log("Here is the new item ", newItem);
+
+    return NextResponse.json(newItem, { status: 201 });
+  } catch (error) {
+    console.error("POST Error:", error);
+    return NextResponse.json(
+      { error: "Failed to create item", details: error.message },
+      { status: 500 },
+    );
   }
 }
