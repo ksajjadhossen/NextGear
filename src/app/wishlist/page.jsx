@@ -120,7 +120,7 @@ const WishlistPage = () => {
             Begin your journey by adding pieces to your private collection.
           </p>
           <button
-            onClick={() => router.push("/shop")}
+            onClick={() => router.push("/items")}
             className="group relative overflow-hidden bg-black text-white px-12 py-4 text-[10px] font-bold uppercase tracking-[0.3em] transition-all"
           >
             <span className="relative z-10">Discover Collection</span>
