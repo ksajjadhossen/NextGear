@@ -3,22 +3,58 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FaEdit, FaTrashAlt, FaPlus, FaSearch } from "react-icons/fa";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import app from "@/lib/firebase";
+import toast from "react-hot-toast";
 
 const MyItems = () => {
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const auth = getAuth(app);
 
   useEffect(() => {
-    const savedItems = JSON.parse(localStorage.getItem("myInventory")) || [];
-    setItems(savedItems);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        fetchUserItems(user.email);
+      } else {
+        setItems([]);
+        setLoading(false);
+      }
+    });
+    return () => unsubscribe();
   }, []);
 
-  const handleDelete = (id) => {
-    const confirmed = confirm("Are you sure you want to delete this item?");
+  const fetchUserItems = async (email) => {
+    try {
+      const res = await fetch("/api/products");
+      const data = await res.json();
+
+      const myData = data.filter((item) => item.sellerEmail === email);
+      setItems(myData);
+    } catch (error) {
+      console.error("Error fetching items:", error);
+      toast.error("FAILED_TO_LOAD_INVENTORY");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const confirmed = confirm("Are you sure you want to delete this asset?");
     if (confirmed) {
-      const updatedItems = items.filter((item) => item.id !== id);
-      setItems(updatedItems);
-      localStorage.setItem("myInventory", JSON.stringify(updatedItems));
+      const toastId = toast.loading("Deleting asset...");
+      try {
+        const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
+        if (res.ok) {
+          setItems(items.filter((item) => item._id !== id));
+          toast.success("ASSET_REMOVED_SUCCESSFULLY", { id: toastId });
+        } else {
+          toast.error("Failed to delete from server", { id: toastId });
+        }
+      } catch (error) {
+        toast.error("DELETE_FAILED", { id: toastId });
+      }
     }
   };
 
@@ -30,6 +66,9 @@ const MyItems = () => {
     (acc, curr) => acc + (Number(curr.price) || 0),
     0,
   );
+
+  if (loading)
+    return <div className="p-20 text-center font-mono">LOADING_ASSETS...</div>;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-12 bg-white min-h-screen">
@@ -55,9 +94,12 @@ const MyItems = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
         {[
           { label: "Total Items", value: items.length },
-          { label: "Active Ads", value: items.length },
+          {
+            label: "Active Ads",
+            value: items.filter((i) => i.status !== "inactive").length,
+          },
           { label: "Items Sold", value: "00" },
-          { label: "Total Value", value: `$${totalEarned}` },
+          { label: "Total Value", value: `$${totalEarned.toLocaleString()}` },
         ].map((stat, i) => (
           <div key={i} className="border border-gray-100 p-5 rounded-sm">
             <p className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">
@@ -87,7 +129,7 @@ const MyItems = () => {
         {filteredItems.length > 0 ? (
           filteredItems.map((item) => (
             <div
-              key={item.id}
+              key={item._id}
               className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center p-4 border border-gray-100 rounded-sm hover:border-black transition-all group"
             >
               <div className="col-span-6 flex items-center gap-4">
@@ -104,7 +146,9 @@ const MyItems = () => {
                     {item.name}
                   </h3>
                   <p className="text-[11px] text-gray-400 uppercase tracking-tighter">
-                    Listed on {item.date}
+                    Listed on{" "}
+                    {item.releasedDate ||
+                      new Date(item.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               </div>
@@ -114,7 +158,9 @@ const MyItems = () => {
               </div>
 
               <div className="col-span-2 flex justify-center">
-                <span className="text-[9px] font-bold px-2 py-1 uppercase tracking-tighter rounded-none border border-green-200 text-green-600 bg-green-50">
+                <span
+                  className={`text-[9px] font-bold px-2 py-1 uppercase tracking-tighter rounded-none border ${item.status === "inactive" ? "border-red-200 text-red-600 bg-red-50" : "border-green-200 text-green-600 bg-green-50"}`}
+                >
                   {item.status || "Active"}
                 </span>
               </div>
@@ -127,7 +173,7 @@ const MyItems = () => {
                   <FaEdit size={14} />
                 </button>
                 <button
-                  onClick={() => handleDelete(item.id)}
+                  onClick={() => handleDelete(item._id)}
                   title="Delete"
                   className="p-2 text-gray-400 hover:text-red-500 transition-colors"
                 >

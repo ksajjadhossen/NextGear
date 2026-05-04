@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 const ProductSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
+    sellerEmail: { type: String, required: true },
+    status: { type: String },
     category: { type: String, required: true },
     price: { type: Number, required: true },
     brand: { type: String, default: "Next Gear" },
@@ -13,7 +15,6 @@ const ProductSchema = new mongoose.Schema(
     warranty: { type: String, default: "2 Years" },
     tags: { type: [String], default: [] },
     releasedDate: { type: String },
-    id: { type: Number, unique: true },
   },
   { timestamps: true },
 );

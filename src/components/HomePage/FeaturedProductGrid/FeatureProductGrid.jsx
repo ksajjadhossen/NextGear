@@ -60,8 +60,8 @@ const FeaturedProductGrid = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-l border-t border-slate-100">
           {products.map((product) => (
             <Link
-              key={product.id}
-              href={`/items/${product.id}`}
+              key={product._id}
+              href={`/items/${product._id}`}
               className="group relative bg-white p-8 border-r border-b border-slate-100 flex flex-col items-start cursor-pointer transition-colors duration-500 hover:bg-[#FAFAFA]"
             >
               {/* Product Category Badge */}

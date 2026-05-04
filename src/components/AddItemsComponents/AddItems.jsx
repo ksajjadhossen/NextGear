@@ -1,12 +1,28 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import app from "@/lib/firebase";
 
 const AddItemPage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [tagInput, setTagInput] = useState("");
+  const [userEmail, setUserEmail] = useState(null);
+  const auth = getAuth(app);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserEmail(user.email);
+      } else {
+        setUserEmail(null);
+        toast.error("Please login first to add items");
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -39,20 +55,23 @@ const AddItemPage = () => {
   };
 
   const handleSubmit = async (e) => {
-    // async যোগ করা হয়েছে
     e.preventDefault();
+
+    if (!userEmail) {
+      toast.error("AUTH_REQUIRED: Please sign in.");
+      return;
+    }
+
     setLoading(true);
 
     try {
       const newItem = {
         ...formData,
-        id: Number(
-          Date.now().toString().slice(-6) +
-            Math.floor(1000 + Math.random() * 9000),
-        ),
+        sellerEmail: userEmail,
         price: parseFloat(formData.price) || 0,
         stock: parseInt(formData.stock) || 0,
         rating: parseFloat(formData.rating) || 4.5,
+        status: "Active",
         releasedDate: new Date().toISOString().split("T")[0],
       };
 
