@@ -1,32 +1,74 @@
+"use client";
 import React from "react";
 
-const Pagination = ({ items }) => {
+const Pagination = ({
+  totalItems,
+  itemsPerPage,
+  currentPage,
+  onPageChange,
+}) => {
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePageChange = (newPage) => {
+    onPageChange(newPage);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  if (totalPages <= 1) return null;
+
   return (
-    <div className="flex flex-col items-center justify-center mt-24 mb-20 gap-6">
-      {/* Subtle Progress Indicator */}
+    <div className="flex flex-col items-center gap-6">
       <div className="flex flex-col items-center gap-2">
         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
-          Viewing {items.length} of {items.length} Products
+          Viewing {Math.min(currentPage * itemsPerPage, totalItems)} of{" "}
+          {totalItems} Products
         </p>
         <div className="w-48 h-px bg-slate-100 relative">
-          <div className="absolute left-0 top-0 h-full bg-black w-1/5 transition-all duration-1000"></div>
+          <div
+            className="absolute left-0 top-0 h-full bg-black transition-all duration-700 ease-in-out"
+            style={{ width: `${(currentPage / totalPages) * 100}%` }}
+          ></div>
         </div>
       </div>
 
-      {/* Modern Load More Button */}
-      <button className="group relative px-16 py-5 bg-transparent border border-slate-200 text-black text-[11px] font-black uppercase tracking-[0.4em] rounded-none hover:border-black transition-all duration-500 overflow-hidden active:scale-[0.98]">
-        <span className="relative z-10 group-hover:text-white transition-colors duration-500">
-          Load More Gear
-        </span>
+      <div className="flex items-center gap-6">
+        <button
+          disabled={currentPage === 1}
+          onClick={() => handlePageChange(currentPage - 1)}
+          className="text-[10px] font-bold uppercase tracking-widest disabled:opacity-20 hover:text-black transition-colors py-2"
+        >
+          Prev
+        </button>
 
-        {/* Animated Background Slide */}
-        <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
-      </button>
+        <div className="flex gap-3">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`w-9 h-9 flex items-center justify-center text-[10px] font-bold border transition-all duration-300
+                ${
+                  currentPage === page
+                    ? "bg-black text-white border-black shadow-lg"
+                    : "bg-white text-slate-400 border-slate-100 hover:border-black hover:text-black"
+                }`}
+            >
+              {String(page).padStart(2, "0")}
+            </button>
+          ))}
+        </div>
 
-      {/* Decorative Technical Detail */}
-      <span className="text-[9px] font-mono text-slate-300 uppercase tracking-tighter">
-        Ref: NG_PAGINATION_CTRL_01
-      </span>
+        {/* Next Button */}
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => handlePageChange(currentPage + 1)}
+          className="text-[10px] font-bold uppercase tracking-widest disabled:opacity-20 hover:text-black transition-colors py-2"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };

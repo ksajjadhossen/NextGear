@@ -11,6 +11,10 @@ const Page = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Pagination States
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
   const [filters, setFilters] = useState({
     search: "",
     category: "All Products",
@@ -69,6 +73,18 @@ const Page = () => {
     return finalResult;
   }, [allProducts, filters, sortType]);
 
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredAndSortedProducts.slice(
+      startIndex,
+      startIndex + itemsPerPage,
+    );
+  }, [filteredAndSortedProducts, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters, sortType]);
+
   const handleReset = () => {
     setFilters({
       search: "",
@@ -77,6 +93,7 @@ const Page = () => {
       inStock: false,
     });
     setSortType("SORT / NEWEST ARRIVALS");
+    setCurrentPage(1);
   };
 
   const sidebarVariants = {
@@ -138,10 +155,10 @@ const Page = () => {
             onSortChange={setSortType}
           />
 
-          {filteredAndSortedProducts.length > 0 ? (
+          {paginatedProducts.length > 0 ? (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
-                {filteredAndSortedProducts.map((item, index) => (
+                {paginatedProducts.map((item, index) => (
                   <motion.div
                     key={item.id || item._id || index}
                     variants={{
@@ -156,7 +173,12 @@ const Page = () => {
               </div>
 
               <div className="mt-20">
-                <Pagination items={filteredAndSortedProducts} />
+                <Pagination
+                  totalItems={filteredAndSortedProducts.length}
+                  itemsPerPage={itemsPerPage}
+                  currentPage={currentPage}
+                  onPageChange={setCurrentPage}
+                />
               </div>
             </>
           ) : (
