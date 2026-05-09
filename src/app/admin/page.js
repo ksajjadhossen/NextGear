@@ -1,11 +1,10 @@
 import dbConnect from "@/lib/mongodb";
-import User from "@/app/models/user";
 
 export default async function AdminDashboard({ searchParams }) {
   const { uid } = await searchParams;
   await dbConnect();
 
-  const user = await User.findOne({ uid });
+  const user = await userModel.findOne({ uid });
 
   if (!user || user.role !== "admin") {
     return <h1>Access Denied! You are not an admin.</h1>;
