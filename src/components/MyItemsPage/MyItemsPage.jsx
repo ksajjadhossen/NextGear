@@ -6,12 +6,14 @@ import { FaEdit, FaTrashAlt, FaPlus, FaSearch } from "react-icons/fa";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "@/lib/firebase";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const MyItems = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const auth = getAuth(app);
+  const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -38,6 +40,14 @@ const MyItems = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEditItem = (item) => {
+    if (!item?._id) {
+      console.error("Item ID is missing!");
+      return;
+    }
+    router.push(`/edit-items/${item._id}`);
   };
 
   const handleDelete = async (id) => {
@@ -130,9 +140,9 @@ const MyItems = () => {
           filteredItems.map((item) => (
             <div
               key={item._id}
-              className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center p-4 border border-gray-100 rounded-sm hover:border-black transition-all group"
+              className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center p-4 border border-gray-100 rounded-sm hover:border-black transition-all group bg-white"
             >
-              <div className="col-span-6 flex items-center gap-4">
+              <div className="col-span-5 flex items-center gap-4">
                 <div className="w-14 h-14 relative bg-gray-50 border border-gray-100 rounded-sm overflow-hidden flex-shrink-0">
                   <Image
                     src={item.image || "/placeholder-gadget.png"}
@@ -157,25 +167,36 @@ const MyItems = () => {
                 ${item.price}
               </div>
 
-              <div className="col-span-2 flex justify-center">
-                <span
-                  className={`text-[9px] font-bold px-2 py-1 uppercase tracking-tighter rounded-none border ${item.status === "inactive" ? "border-red-200 text-red-600 bg-red-50" : "border-green-200 text-green-600 bg-green-50"}`}
+              <div className="col-span-3 flex justify-center">
+                <select
+                  value={item.status || "active"}
+                  onChange={(e) => handleUpdateStatus(item._id, e.target.value)}
+                  className={`text-[9px] font-bold px-2 py-1 uppercase tracking-tighter rounded-none border cursor-pointer outline-none transition-all
+              ${
+                item.status === "inactive"
+                  ? "border-red-200 text-red-600 bg-red-50 hover:bg-red-100"
+                  : "border-green-200 text-green-600 bg-green-50 hover:bg-green-100"
+              }`}
                 >
-                  {item.status || "Active"}
-                </span>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="draft">Draft</option>
+                </select>
               </div>
 
-              <div className="col-span-2 flex justify-end gap-4">
+              <div className="col-span-2 flex justify-end gap-3">
                 <button
-                  title="Edit"
-                  className="p-2 text-gray-400 hover:text-black transition-colors"
+                  onClick={() => handleEditItem(item)} // Edit Functionality
+                  title="Edit Details"
+                  className="p-2 text-gray-400 hover:text-black hover:bg-gray-50 rounded-full transition-all"
                 >
                   <FaEdit size={14} />
                 </button>
+
                 <button
                   onClick={() => handleDelete(item._id)}
-                  title="Delete"
-                  className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                  title="Delete Item"
+                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
                 >
                   <FaTrashAlt size={14} />
                 </button>

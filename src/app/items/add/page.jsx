@@ -4,7 +4,6 @@ import React from "react";
 import connectDB from "../../../lib/mongodb";
 
 const page = async () => {
-  await connectDB();
   return (
     <div>
       <ProtectedRoute>

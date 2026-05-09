@@ -1,0 +1,16 @@
+import { NextResponse } from "next/server";
+import dbConnect from "@/lib/mongodb";
+import User from "@/app/models/User";
+
+export async function POST(req) {
+  await dbConnect();
+  const { email, uid } = await req.json();
+
+  let user = await User.findOne({ uid });
+
+  if (!user) {
+    user = await User.create({ email, uid, role: "user" });
+  }
+
+  return NextResponse.json(user);
+}

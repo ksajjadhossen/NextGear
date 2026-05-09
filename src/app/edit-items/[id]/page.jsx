@@ -1,16 +1,33 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "@/lib/firebase";
 
-const AddItemPage = () => {
+const EditItemPage = () => {
   const router = useRouter();
+  const params = useParams();
+  const id = params.id;
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
   const [tagInput, setTagInput] = useState("");
   const [userEmail, setUserEmail] = useState(null);
   const auth = getAuth(app);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    category: "Wearables",
+    price: "",
+    brand: "Next Gear",
+    stock: "",
+    rating: 4.5,
+    image: "",
+    description: "",
+    warranty: "2 Years",
+    tags: [],
+    status: "Active",
+  });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -18,25 +35,46 @@ const AddItemPage = () => {
         setUserEmail(user.email);
       } else {
         setUserEmail(null);
-        toast.error("Please login first to add items");
+        toast.error("ACCESS_DENIED: Please login.");
+        router.push("/login");
       }
     });
     return () => unsubscribe();
-  }, []);
+  }, [auth, router]);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    category: "Wearables",
-    price: "",
-    brand: "Next Gear",
-    stock: "12",
-    rating: 4.5,
-    image: "",
-    description: "",
-    warranty: "2 Years",
-    tags: [],
-  });
+  useEffect(() => {
+    const fetchItemDetails = async () => {
+      if (!id) return;
 
+      try {
+        setFetching(true);
+        // আপনার API রাউট অনুযায়ী fetch কল (যেমন: /api/products/[id])
+        const response = await fetch(`/api/products/${id}`);
+        const data = await response.json();
+
+        if (response.ok && data) {
+          // ডাটা পাওয়া গেলে সরাসরি formData-তে সেট করে দেওয়া হচ্ছে
+          // এতে করে ইনপুট ফিল্ডগুলোতে মানগুলো অটোমেটিক বসে যাবে (Prefilled)
+          setFormData({
+            ...data,
+            // ডাটাবেসে tags না থাকলে খালি অ্যারে সেট হবে
+            tags: Array.isArray(data.tags) ? data.tags : [],
+          });
+        } else {
+          toast.error("FAILED_TO_RETRIEVE_ASSET");
+        }
+      } catch (error) {
+        console.error("Fetch Error:", error);
+        toast.error("NETWORK_ERROR: Asset sync failed");
+      } finally {
+        setFetching(false);
+      }
+    };
+
+    fetchItemDetails();
+  }, [id]);
+
+  // ট্যাগ ম্যানেজমেন্ট
   const addTag = (e) => {
     if (e.key === "Enter" && tagInput.trim()) {
       e.preventDefault();
@@ -54,77 +92,59 @@ const AddItemPage = () => {
     });
   };
 
+  // ডাটা আপডেট/সাবমিট লজিক
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!userEmail) {
-      toast.error("AUTH_REQUIRED: Please sign in.");
-      return;
-    }
+    if (!userEmail) return;
 
     setLoading(true);
-
     try {
-      const newItem = {
+      const updatedItem = {
         ...formData,
-        sellerEmail: userEmail,
-        price: parseFloat(formData.price) || 0,
-        stock: parseInt(formData.stock) || 0,
-        rating: parseFloat(formData.rating) || 4.5,
-        status: "Active",
-        releasedDate: new Date().toISOString().split("T")[0],
+        price: parseFloat(formData.price),
+        stock: parseInt(formData.stock),
+        updatedAt: new Date().toISOString(),
       };
 
-      const response = await fetch("/api/products", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newItem),
+      const response = await fetch(`/api/products/${id}`, {
+        method: "PATCH", // আংশিক আপডেটের জন্য PATCH ব্যবহার করা ভালো
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedItem),
       });
 
-      const result = await response.json();
+      if (!response.ok) throw new Error("Update operation failed");
 
-      if (!response.ok) {
-        throw new Error(result.details || "Failed to sync with database");
-      }
-
-      toast.success(`${formData.name.toUpperCase()} DEPLOYED TO CLOUD`, {
-        style: {
-          borderRadius: "0px",
-          background: "#000",
-          color: "#fff",
-          fontSize: "11px",
-          letterSpacing: "0.1em",
-        },
-      });
-
-      setTimeout(() => {
-        setLoading(false);
-        router.push("/my-items");
-      }, 1000);
+      toast.success("SYSTEM_RECALIBRATED: ENTRY UPDATED");
+      router.push("/my-items");
     } catch (error) {
+      toast.error(error.message);
+    } finally {
       setLoading(false);
-      toast.error(error.message || "DATABASE_SYNC_ERROR");
-      console.error("Submission Error:", error);
     }
   };
+
+  // ডাটা লোড হওয়ার সময় দেখাবে
+  if (fetching)
+    return (
+      <div className="min-h-screen flex items-center justify-center font-mono text-[10px] tracking-[0.5em] uppercase text-zinc-500">
+        Syncing_Asset_Data...
+      </div>
+    );
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-16 bg-white min-h-screen">
       <div className="mb-12">
         <h1 className="text-4xl font-black uppercase tracking-tighter italic">
-          Create_Entry
+          Edit_Entry
         </h1>
         <p className="text-[9px] text-gray-400 tracking-[0.4em] font-bold mt-2">
-          LOCAL_STORAGE / CLUSTER-0 / INVENTORY
+          INVENTORY / ASSET_ID: {id}
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-12">
-        {/* Top Section: Media & Primary Details */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          {/* Image Upload Area */}
+          {/* ইমেজ সেকশন */}
           <div className="lg:col-span-4 space-y-4">
             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
               Media Asset
@@ -137,18 +157,14 @@ const AddItemPage = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="text-center p-8">
-                  <div className="w-8 h-px bg-zinc-300 mx-auto mb-2"></div>
-                  <span className="text-[9px] text-zinc-400 uppercase tracking-tighter">
-                    Waiting for URL...
-                  </span>
-                </div>
+                <span className="text-[9px] text-zinc-400">No Image Asset</span>
               )}
             </div>
             <input
               type="url"
               required
-              placeholder="Paste Image URL"
+              value={formData.image}
+              placeholder="Image URL"
               className="w-full border-b border-zinc-200 py-3 outline-none focus:border-black text-[11px] font-mono"
               onChange={(e) =>
                 setFormData({ ...formData, image: e.target.value })
@@ -156,7 +172,7 @@ const AddItemPage = () => {
             />
           </div>
 
-          {/* Core Info */}
+          {/* প্রধান তথ্য */}
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
             <div className="flex flex-col space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
@@ -165,7 +181,7 @@ const AddItemPage = () => {
               <input
                 type="text"
                 required
-                placeholder="Item Name"
+                value={formData.name}
                 className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm font-bold uppercase"
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
@@ -180,18 +196,20 @@ const AddItemPage = () => {
                 type="number"
                 required
                 step="0.01"
-                placeholder="00.00"
+                value={formData.price}
                 className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm font-bold"
                 onChange={(e) =>
                   setFormData({ ...formData, price: e.target.value })
                 }
               />
             </div>
+            {/* ক্যাটাগরি এবং স্ট্যাটাস সিলেক্ট */}
             <div className="flex flex-col space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
                 Category
               </label>
               <select
+                value={formData.category}
                 className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm font-bold bg-transparent"
                 onChange={(e) =>
                   setFormData({ ...formData, category: e.target.value })
@@ -205,29 +223,30 @@ const AddItemPage = () => {
             </div>
             <div className="flex flex-col space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                Brand Provider
+                Status
               </label>
-              <input
-                type="text"
-                defaultValue="Next Gear"
-                className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm font-bold"
+              <select
+                value={formData.status}
+                className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm font-bold bg-transparent"
                 onChange={(e) =>
-                  setFormData({ ...formData, brand: e.target.value })
+                  setFormData({ ...formData, status: e.target.value })
                 }
-              />
+              >
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
             </div>
           </div>
         </div>
 
-        {/* Bottom Section: Metadata & Tags */}
+        {/* ট্যাগ এবং অন্যান্য তথ্য */}
         <div className="space-y-10 pt-10 border-t border-zinc-100">
-          {/* Tags Input */}
           <div className="flex flex-col space-y-4">
             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
               Classification Tags
             </label>
             <div className="flex flex-wrap gap-2 mb-2">
-              {formData.tags.map((tag, index) => (
+              {formData.tags?.map((tag, index) => (
                 <span
                   key={index}
                   className="bg-black text-white text-[9px] px-3 py-1 uppercase font-bold flex items-center gap-2 group cursor-pointer"
@@ -242,7 +261,7 @@ const AddItemPage = () => {
               type="text"
               value={tagInput}
               onKeyDown={addTag}
-              placeholder="Type tag and press Enter..."
+              placeholder="Add more tags..."
               className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm"
               onChange={(e) => setTagInput(e.target.value)}
             />
@@ -253,10 +272,9 @@ const AddItemPage = () => {
               <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
                 Description
               </label>
-              <input
-                type="text"
-                placeholder="Brief summary of product features..."
-                className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm"
+              <textarea
+                value={formData.description}
+                className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm min-h-[40px]"
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
@@ -269,7 +287,7 @@ const AddItemPage = () => {
                 </label>
                 <input
                   type="number"
-                  defaultValue="12"
+                  value={formData.stock}
                   className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm font-bold"
                   onChange={(e) =>
                     setFormData({ ...formData, stock: e.target.value })
@@ -282,7 +300,7 @@ const AddItemPage = () => {
                 </label>
                 <input
                   type="text"
-                  defaultValue="2 Years"
+                  value={formData.warranty}
                   className="border-b border-zinc-200 py-3 outline-none focus:border-black text-sm font-bold"
                   onChange={(e) =>
                     setFormData({ ...formData, warranty: e.target.value })
@@ -298,15 +316,15 @@ const AddItemPage = () => {
           disabled={loading}
           className={`w-full py-6 text-[12px] font-black uppercase tracking-[0.6em] transition-all duration-500 ${
             loading
-              ? "bg-zinc-100 text-zinc-400"
-              : "bg-black text-white hover:bg-zinc-900 shadow-[0_20px_50px_rgba(0,0,0,0.15)]"
+              ? "bg-zinc-100 text-zinc-400 cursor-not-allowed"
+              : "bg-black text-white hover:bg-zinc-900 shadow-xl"
           }`}
         >
-          {loading ? "PROCESSING_CORE..." : "Push to Database"}
+          {loading ? "SYNCING_CHANGES..." : "Update Asset"}
         </button>
       </form>
     </div>
   );
 };
 
-export default AddItemPage;
+export default EditItemPage;

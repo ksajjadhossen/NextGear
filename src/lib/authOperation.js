@@ -10,9 +10,30 @@ import {
 
 const googleProvider = new GoogleAuthProvider();
 
+import Cookies from "js-cookie";
+
+const syncUserToDb = async (user) => {
+  try {
+    const response = await fetch("/api/auth/sync-user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: user.email, uid: user.uid }),
+    });
+
+    const userData = await response.json();
+    if (userData.role) {
+      Cookies.set("userRole", userData.role, { expires: 7 });
+    }
+  } catch (error) {
+    console.error("Database sync failed:", error);
+  }
+};
+
 export const loginWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
+
+    await syncUserToDb(result.user);
     return result.user;
   } catch (error) {
     console.error("Google Login Error:", error.message);
@@ -33,6 +54,8 @@ export const registerWithEmail = async (fullName, email, password) => {
       displayName: fullName,
     });
 
+    await syncUserToDb(user);
+
     return user;
   } catch (error) {
     console.error("Registration Error:", error.message);
@@ -43,6 +66,7 @@ export const registerWithEmail = async (fullName, email, password) => {
 export const loginWithEmail = async (email, password) => {
   try {
     const result = await signInWithEmailAndPassword(auth, email, password);
+    await syncUserToDb(result.user);
     return result.user;
   } catch (error) {
     console.error("Login Error:", error.message);
@@ -50,4 +74,7 @@ export const loginWithEmail = async (email, password) => {
   }
 };
 
-export const logout = () => signOut(auth);
+export const logout = () => {
+  Cookies.remove("userRole");
+  return signOut(auth);
+};

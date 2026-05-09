@@ -7,16 +7,35 @@ import Image from "next/image";
 import { useAuth } from "@/context/authContext";
 import { logout } from "@/lib/authOperation";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 const Navbar = () => {
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-
+  const [role, setRole] = useState(null);
   const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  useEffect(() => {
+    const checkRole = () => {
+      const userRole = Cookies.get("userRole");
+      setRole(userRole || null);
+    };
 
+    checkRole(); // মাউন্ট হওয়ার সময় চেক করবে
+
+    // কুকি বা স্টোরেজ চেঞ্জ হলে যেন অটোমেটিক আপডেট হয়
+    window.addEventListener("storage", checkRole);
+
+    // প্রতি ১ সেকেন্ড পরপর একবার চেক করবে (রিলোড ছাড়া ডাটা পাওয়ার নিশ্চিত উপায়)
+    const interval = setInterval(checkRole, 1000);
+
+    return () => {
+      window.removeEventListener("storage", checkRole);
+      clearInterval(interval);
+    };
+  }, [user]);
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -103,7 +122,7 @@ const Navbar = () => {
                   </Link>
                 ))}
 
-                {user && (
+                {role === "admin" && (
                   <Link
                     href="/my-items"
                     className={`text-[13px] font-medium transition-all duration-300 relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-black after:transition-transform after:duration-300 ${
@@ -116,7 +135,7 @@ const Navbar = () => {
                   </Link>
                 )}
 
-                {user && (
+                {role === "admin" && (
                   <Link
                     href="/items/add"
                     className={`text-[13px] font-medium transition-all duration-300 relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-black after:transition-transform after:duration-300 ${
@@ -216,7 +235,7 @@ const Navbar = () => {
                       </Link>
                       <button
                         onClick={handleLogOut}
-                        className="text-[12px] font-medium text-red-500"
+                        className="text-[12px] font-medium text-red-500 cursor-pointer hover:text-red-700 transition-colors duration-300"
                       >
                         Logout
                       </button>

@@ -38,9 +38,6 @@ export async function POST(request) {
   try {
     await connectDB();
     const body = await request.json();
-
-    console.log("Incoming Wishlist Data:", body);
-
     const existing = await wishlistModel.findOne({
       userEmail: body.userEmail,
       productId: body.productId,

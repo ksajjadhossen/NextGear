@@ -53,7 +53,7 @@ const Login = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="w-full max-w-[380px]" // max-w-95 এর বদলে স্ট্যান্ডার্ড পিক্সেল দেওয়া হয়েছে
+        className="w-full max-w-95" // max-w-95 এর বদলে স্ট্যান্ডার্ড পিক্সেল দেওয়া হয়েছে
       >
         {/* Header Section */}
         <motion.div variants={itemVariants} className="text-center mb-10">

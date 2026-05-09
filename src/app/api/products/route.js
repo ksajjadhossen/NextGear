@@ -28,16 +28,12 @@ export async function POST(request) {
       );
     }
 
-    console.log("Incoming Payload Email:", body.sellerEmail);
-
     const newItem = await Product.create({
       ...body,
 
       price: Number(body.price),
       stock: Number(body.stock),
     });
-
-    console.log("Saved Item from DB:", newItem);
 
     return NextResponse.json(newItem, { status: 201 });
   } catch (error) {
