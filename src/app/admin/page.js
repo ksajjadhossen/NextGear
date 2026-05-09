@@ -1,5 +1,5 @@
-import User from "@/models/User";
 import dbConnect from "@/lib/mongodb";
+import User from "@/app/models/user";
 
 export default async function AdminDashboard({ searchParams }) {
   const { uid } = await searchParams;
