@@ -48,16 +48,14 @@ const EditItemPage = () => {
 
       try {
         setFetching(true);
-        // আপনার API রাউট অনুযায়ী fetch কল (যেমন: /api/products/[id])
+
         const response = await fetch(`/api/products/${id}`);
         const data = await response.json();
 
         if (response.ok && data) {
-          // ডাটা পাওয়া গেলে সরাসরি formData-তে সেট করে দেওয়া হচ্ছে
-          // এতে করে ইনপুট ফিল্ডগুলোতে মানগুলো অটোমেটিক বসে যাবে (Prefilled)
           setFormData({
             ...data,
-            // ডাটাবেসে tags না থাকলে খালি অ্যারে সেট হবে
+
             tags: Array.isArray(data.tags) ? data.tags : [],
           });
         } else {
@@ -74,7 +72,6 @@ const EditItemPage = () => {
     fetchItemDetails();
   }, [id]);
 
-  // ট্যাগ ম্যানেজমেন্ট
   const addTag = (e) => {
     if (e.key === "Enter" && tagInput.trim()) {
       e.preventDefault();
@@ -92,7 +89,6 @@ const EditItemPage = () => {
     });
   };
 
-  // ডাটা আপডেট/সাবমিট লজিক
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!userEmail) return;
@@ -107,7 +103,7 @@ const EditItemPage = () => {
       };
 
       const response = await fetch(`/api/products/${id}`, {
-        method: "PATCH", // আংশিক আপডেটের জন্য PATCH ব্যবহার করা ভালো
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedItem),
       });
@@ -123,7 +119,6 @@ const EditItemPage = () => {
     }
   };
 
-  // ডাটা লোড হওয়ার সময় দেখাবে
   if (fetching)
     return (
       <div className="min-h-screen flex items-center justify-center font-mono text-[10px] tracking-[0.5em] uppercase text-zinc-500">
@@ -144,7 +139,6 @@ const EditItemPage = () => {
 
       <form onSubmit={handleSubmit} className="space-y-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          {/* ইমেজ সেকশন */}
           <div className="lg:col-span-4 space-y-4">
             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
               Media Asset
@@ -172,7 +166,6 @@ const EditItemPage = () => {
             />
           </div>
 
-          {/* প্রধান তথ্য */}
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
             <div className="flex flex-col space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
@@ -203,7 +196,7 @@ const EditItemPage = () => {
                 }
               />
             </div>
-            {/* ক্যাটাগরি এবং স্ট্যাটাস সিলেক্ট */}
+
             <div className="flex flex-col space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
                 Category
@@ -239,7 +232,6 @@ const EditItemPage = () => {
           </div>
         </div>
 
-        {/* ট্যাগ এবং অন্যান্য তথ্য */}
         <div className="space-y-10 pt-10 border-t border-zinc-100">
           <div className="flex flex-col space-y-4">
             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">

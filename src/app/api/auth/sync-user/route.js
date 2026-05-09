@@ -5,6 +5,7 @@ import User from "@/app/models/user";
 export async function POST(req) {
   await dbConnect();
   const { email, uid } = await req.json();
+  console.log("Syncing user:", email, uid);
 
   let user = await User.findOne({ uid });
 
