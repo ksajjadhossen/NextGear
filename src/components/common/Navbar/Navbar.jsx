@@ -22,13 +22,11 @@ const Navbar = () => {
       const userRole = Cookies.get("userRole");
       setRole(userRole || null);
     };
+    console.log(role);
+    checkRole();
 
-    checkRole(); // মাউন্ট হওয়ার সময় চেক করবে
-
-    // কুকি বা স্টোরেজ চেঞ্জ হলে যেন অটোমেটিক আপডেট হয়
     window.addEventListener("storage", checkRole);
 
-    // প্রতি ১ সেকেন্ড পরপর একবার চেক করবে (রিলোড ছাড়া ডাটা পাওয়ার নিশ্চিত উপায়)
     const interval = setInterval(checkRole, 1000);
 
     return () => {
@@ -327,7 +325,7 @@ const Navbar = () => {
                 </Link>
               </li>
             ))}
-            {user && (
+            {role === "admin" && (
               <li>
                 <Link
                   href="/my-items"
@@ -337,16 +335,17 @@ const Navbar = () => {
                 </Link>
               </li>
             )}
+            {role === "admin" && (
+              <div className="mt-auto pt-6 border-t">
+                <Link
+                  href="/items/add"
+                  className="w-full bg-black text-white text-center py-4 rounded-xl font-bold shadow-lg block"
+                >
+                  Sell Your Gear
+                </Link>
+              </div>
+            )}
           </ul>
-
-          <div className="mt-auto pt-6 border-t">
-            <Link
-              href="/items/add"
-              className="w-full bg-black text-white text-center py-4 rounded-xl font-bold shadow-lg block"
-            >
-              Sell Your Gear
-            </Link>
-          </div>
         </div>
       </div>
     </div>
