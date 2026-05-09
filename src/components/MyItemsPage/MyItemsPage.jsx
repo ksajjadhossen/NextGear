@@ -7,7 +7,6 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "@/lib/firebase";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-
 const MyItems = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,20 +51,35 @@ const MyItems = () => {
 
   const handleDelete = async (id) => {
     const confirmed = confirm("Are you sure you want to delete this asset?");
-    if (confirmed) {
-      const toastId = toast.loading("Deleting asset...");
-      try {
-        const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
-        if (res.ok) {
-          setItems(items.filter((item) => item._id !== id));
-          toast.success("ASSET_REMOVED_SUCCESSFULLY", { id: toastId });
-        } else {
-          toast.error("Failed to delete from server", { id: toastId });
-        }
-      } catch (error) {
-        toast.error("DELETE_FAILED", { id: toastId });
+
+    if (!confirmed) return;
+    const deleteAction = async () => {
+      const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
+
+      if (!res.ok) {
+        throw new Error("Failed to delete from server");
       }
-    }
+      setItems((prevItems) => prevItems.filter((item) => item._id !== id));
+      return "Asset removed successfully!";
+    };
+
+    toast.promise(
+      deleteAction(),
+      {
+        loading: "Deleting asset...",
+        success: (msg) => <b>{msg}</b>,
+        error: (err) => <b>{err.message || "Delete failed!"}</b>,
+      },
+      {
+        style: {
+          minWidth: "250px",
+        },
+        success: {
+          duration: 4000,
+          icon: "🔥",
+        },
+      },
+    );
   };
 
   const filteredItems = items.filter((item) =>
