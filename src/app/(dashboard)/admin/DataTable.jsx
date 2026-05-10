@@ -1,25 +1,45 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import { Edit2, Trash2, Eye, Search } from "lucide-react";
+import Link from "next/link";
 
-export const DataTable = ({ items }) => {
+export const DataTable = ({ items: initialItems }) => {
+  const [items, setItems] = useState(initialItems || []);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  // ১. Filtering লজিক
+  useEffect(() => {
+    if (initialItems) {
+      setItems(initialItems);
+    }
+  }, [initialItems]);
+
   const filteredItems = items.filter(
     (item) =>
-      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchTerm.toLowerCase()),
+      item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.category?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  // ২. Pagination লজিক
   const lastIndex = currentPage * itemsPerPage;
   const firstIndex = lastIndex - itemsPerPage;
   const currentItems = filteredItems.slice(firstIndex, lastIndex);
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
 
+  const handleDelete = async (id) => {
+    if (confirm("CONFIRM_DELETION?")) {
+      try {
+        const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
+        if (res.ok) {
+          setItems(items.filter((item) => item._id !== id));
+          toast.success("SYSTEM: ASSET_REMOVED");
+        }
+      } catch (err) {
+        toast.error("ERROR: DELETION_FAILED");
+      }
+    }
+  };
   return (
     <div className="bg-white border border-gray-100 mt-12 overflow-hidden shadow-[0_0_50px_-12px_rgba(0,0,0,0.05)]">
       {/* Table Header Section */}
@@ -86,13 +106,22 @@ export const DataTable = ({ items }) => {
                 </td>
                 <td className="px-8 py-6">
                   <div className="flex justify-center gap-4">
-                    <button className="text-gray-300 hover:text-white transition-colors">
+                    <Link
+                      href={`/items/${item._id}`}
+                      className="text-gray-300 hover:text-white transition-colors"
+                    >
                       <Eye size={16} />
-                    </button>
-                    <button className="text-gray-300 hover:text-white transition-colors">
+                    </Link>
+                    <Link
+                      href={`/edit-items/${item._id}`}
+                      className="text-gray-300 hover:text-white transition-colors"
+                    >
                       <Edit2 size={16} />
-                    </button>
-                    <button className="text-gray-300 hover:text-red-500 transition-colors">
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(item._id)}
+                      className="text-gray-300 hover:text-red-500 transition-colors"
+                    >
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -114,11 +143,11 @@ export const DataTable = ({ items }) => {
         </button>
 
         <div className="flex items-center gap-4">
-          <div className="h-[1px] w-8 bg-gray-200"></div>
+          <div className="h-px w-8 bg-gray-200"></div>
           <span className="text-[10px] font-mono font-bold text-gray-400 uppercase">
             Page_{currentPage}_of_{totalPages}
           </span>
-          <div className="h-[1px] w-8 bg-gray-200"></div>
+          <div className="h-px w-8 bg-gray-200"></div>
         </div>
 
         <button

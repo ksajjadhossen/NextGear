@@ -2,7 +2,7 @@ import Product from "@/app/models/product.model";
 import connectDB from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
-
+import { isValidObjectId } from "mongoose";
 export async function GET(request, { params }) {
   try {
     await connectDB();
@@ -21,18 +21,37 @@ export async function GET(request, { params }) {
     );
   }
 }
-
 export async function PATCH(request, { params }) {
   try {
     await connectDB();
-    const { id } = params;
+
+    // Next.js 15 এ params কে অবশ্যই await করতে হবে
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
+
+    if (!isValidObjectId(id)) {
+      return NextResponse.json({ error: "INVALID_ASSET_ID" }, { status: 400 });
+    }
+
     const body = await request.json();
-    const updatedItem = await Product.findByIdAndUpdate(id, body, {
-      new: true,
-    });
+
+    const updatedItem = await Product.findByIdAndUpdate(
+      id,
+      { $set: body },
+      { new: true, runValidators: true },
+    );
+
+    if (!updatedItem) {
+      return NextResponse.json({ error: "ASSET_NOT_FOUND" }, { status: 404 });
+    }
+
     return NextResponse.json(updatedItem);
   } catch (error) {
-    return NextResponse.json({ error: "Update failed" }, { status: 500 });
+    console.error("PATCH_ERROR:", error);
+    return NextResponse.json(
+      { error: "SYSTEM_RECALIBRATION_FAILED" },
+      { status: 500 },
+    );
   }
 }
 export async function DELETE(request, { params }) {

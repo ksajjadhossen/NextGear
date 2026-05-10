@@ -48,15 +48,22 @@ const EditItemPage = () => {
 
       try {
         setFetching(true);
-
         const response = await fetch(`/api/products/${id}`);
         const data = await response.json();
 
         if (response.ok && data) {
           setFormData({
-            ...data,
+            name: data.name || "",
+            category: data.category || "Wearables",
+            price: data.price || "",
+            brand: data.brand || "Next Gear",
+            stock: data.stock || "",
+            image: data.image || "",
 
+            description: data.description || data.desc || "",
+            warranty: data.warranty || "2 Years",
             tags: Array.isArray(data.tags) ? data.tags : [],
+            status: data.status || "Active",
           });
         } else {
           toast.error("FAILED_TO_RETRIEVE_ASSET");
