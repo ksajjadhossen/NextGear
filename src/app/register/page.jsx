@@ -25,7 +25,7 @@ const Register = () => {
     e.preventDefault();
     try {
       await registerWithEmail(fullName, email, password);
-      router.push("/login");
+      router.push("/");
       console.log("successfully created account");
     } catch (error) {
       console.error("Email registration failed:", error);
@@ -55,7 +55,7 @@ const Register = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="w-full max-w-[400px]"
+        className="w-full max-w-100"
       >
         {/* Header Section */}
         <motion.div variants={itemVariants} className="text-center mb-10">
