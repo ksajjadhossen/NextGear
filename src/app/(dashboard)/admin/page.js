@@ -9,6 +9,7 @@ import ProductModel from "@/app/models/product.model";
 import UserModel from "@/app/models/user.model";
 import wishlistModel from "@/app/models/wishlist.model";
 import { DataTable } from "./DataTable";
+import CategoryChart from "./CategoryChart";
 
 const AdminDashboard = async () => {
   const cookieStore = await cookies();
@@ -50,6 +51,7 @@ const AdminDashboard = async () => {
             totalWishlist={Wishlists.length}
           />
           <AdminCharts products={products} />
+          <CategoryChart chartData={products} />
           <DataTable items={products} />
 
           <RecentItems items={recentItems} />

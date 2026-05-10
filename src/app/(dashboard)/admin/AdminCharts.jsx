@@ -1,4 +1,3 @@
-// components/admin/AdminCharts.jsx
 "use client";
 import {
   BarChart,
@@ -15,7 +14,6 @@ import {
 } from "recharts";
 
 export const AdminCharts = ({ products }) => {
-  // ১. ক্যাটাগরি অনুযায়ী ডাটা কাউন্ট
   const categoryData = products.reduce((acc, item) => {
     acc[item.category] = (acc[item.category] || 0) + 1;
     return acc;
@@ -26,7 +24,6 @@ export const AdminCharts = ({ products }) => {
     total: categoryData[cat],
   }));
 
-  // ২. স্টক স্ট্যাটাস
   const stockData = [
     { name: "IN_STOCK", value: products.filter((p) => p.stock !== 0).length },
     {
