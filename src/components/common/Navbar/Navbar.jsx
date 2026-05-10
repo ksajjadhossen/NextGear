@@ -143,6 +143,18 @@ const Navbar = () => {
                     Add Item
                   </Link>
                 )}
+                {role === "admin" && (
+                  <Link
+                    href="/admin"
+                    className={`text-[13px] font-medium transition-all duration-300 relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-black after:transition-transform after:duration-300 ${
+                      isActive("/admin")
+                        ? "text-black after:scale-x-100"
+                        : "text-gray-400 after:scale-x-0 hover:text-black hover:after:scale-x-100"
+                    }`}
+                  >
+                    Dashboard
+                  </Link>
+                )}
               </div>
 
               {/* Right Section */}
@@ -312,36 +324,61 @@ const Navbar = () => {
             )}
           </div>
 
-          <ul className="space-y-1 flex-1">
+          <ul className="space-y-1 flex-1 flex flex-col h-full">
             {navLinks.map((link) => (
               <li key={link.name}>
                 <Link
                   href={link.href}
-                  className={`text-lg font-semibold py-3 px-4 rounded-lg ${isActive(link.href) ? "bg-black text-white" : "text-gray-500"}`}
+                  className={`text-lg font-semibold py-3 px-4 rounded-lg block ${
+                    isActive(link.href)
+                      ? "bg-black text-white"
+                      : "text-gray-500"
+                  }`}
                 >
                   {link.name}
                 </Link>
               </li>
             ))}
+
             {role === "admin" && (
-              <li>
-                <Link
-                  href="/my-items"
-                  className={`text-lg font-semibold py-3 px-4 rounded-lg ${isActive("/my-items") ? "bg-black text-white" : "text-gray-500"}`}
-                >
-                  My Items
-                </Link>
-              </li>
-            )}
-            {role === "admin" && (
-              <div className="mt-auto pt-6 border-t">
-                <Link
-                  href="/items/add"
-                  className="w-full bg-black text-white text-center py-4 rounded-xl font-bold shadow-lg block"
-                >
-                  Sell Your Gear
-                </Link>
-              </div>
+              <>
+                <li>
+                  <Link
+                    href="/my-items"
+                    className={`text-lg font-semibold py-3 px-4 rounded-lg block ${
+                      isActive("/my-items")
+                        ? "bg-black text-white"
+                        : "text-gray-500"
+                    }`}
+                  >
+                    My Items
+                  </Link>
+                </li>
+
+                {/* My Items সরিয়ে এখন Add Items */}
+                <li>
+                  <Link
+                    href="/items/add"
+                    className={`text-lg font-semibold py-3 px-4 rounded-lg block ${
+                      isActive("/items/add")
+                        ? "bg-black text-white"
+                        : "text-gray-500"
+                    }`}
+                  >
+                    Add Items
+                  </Link>
+                </li>
+
+                {/* একদম শেষের স্পেশাল ড্যাশবোর্ড বাটন - "Next Gear" স্টাইলে */}
+                <div className="mt-auto pt-6 border-t">
+                  <Link
+                    href="/admin"
+                    className="w-full bg-black text-white text-center py-4 rounded-xl font-bold shadow-lg block uppercase italic tracking-widest transition-transform active:scale-95"
+                  >
+                    Open Admin Terminal
+                  </Link>
+                </div>
+              </>
             )}
           </ul>
         </div>
