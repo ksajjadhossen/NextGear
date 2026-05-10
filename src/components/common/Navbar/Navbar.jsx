@@ -22,9 +22,7 @@ const Navbar = () => {
       const userRole = Cookies.get("userRole");
       setRole(userRole || null);
     };
-    console.log(role);
     checkRole();
-
     window.addEventListener("storage", checkRole);
 
     const interval = setInterval(checkRole, 1000);

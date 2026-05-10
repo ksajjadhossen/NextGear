@@ -1,9 +1,15 @@
 import AddItemPage from "@/components/AddItemsComponents/AddItems";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import React from "react";
-import connectDB from "../../../lib/mongodb";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const page = async () => {
+  const cookieStore = await cookies();
+  const role = cookieStore.get("userRole")?.value;
+  if (role !== "admin") {
+    redirect("/");
+  }
   return (
     <div>
       <ProtectedRoute>
