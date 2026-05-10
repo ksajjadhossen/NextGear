@@ -1,32 +1,47 @@
 "use client";
 import React, { useState } from "react";
-import { FaGoogle } from "react-icons/fa";
+import { FaGoogle, FaCircleNotch } from "react-icons/fa";
 import Link from "next/link";
 import { loginWithEmail, loginWithGoogle } from "@/lib/authOperation";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleGoogleLogin = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
     try {
       await loginWithGoogle();
+      toast.success("ACCESS GRANTED");
       router.push("/");
     } catch (error) {
       console.error("Google Login Error:", error.message);
+      toast.error("AUTH_FAILED: CONNECTION REJECTED");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleLogInWithEmail = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
+
+    setIsLoading(true);
     try {
       await loginWithEmail(email, password);
+      toast.success("LOGIN_SUCCESSFUL");
       router.push("/");
     } catch (error) {
       console.error("Email/Password Login Error:", error.message);
+      toast.error("INVALID_CREDENTIALS");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -53,7 +68,7 @@ const Login = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="w-full max-w-95" // max-w-95 এর বদলে স্ট্যান্ডার্ড পিক্সেল দেওয়া হয়েছে
+        className="w-full max-w-95"
       >
         {/* Header Section */}
         <motion.div variants={itemVariants} className="text-center mb-10">
@@ -68,10 +83,14 @@ const Login = () => {
         {/* Social Login */}
         <motion.div variants={itemVariants} className="space-y-3 mb-8">
           <button
-            onClick={() => handleGoogleLogin()}
-            className="flex w-full items-center justify-center gap-3 rounded-none border border-gray-100 py-3 text-[11px] font-bold uppercase tracking-widest text-black hover:bg-black hover:text-white transition-all duration-300 active:scale-95 shadow-sm"
+            type="button"
+            disabled={isLoading}
+            onClick={handleGoogleLogin}
+            className={`flex w-full items-center justify-center gap-3 rounded-none border border-gray-100 py-3 text-[11px] font-bold uppercase tracking-widest text-black transition-all duration-300 shadow-sm
+              ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-black hover:text-white active:scale-95"}`}
           >
-            <FaGoogle className="text-red-500" /> Continue with Google
+            <FaGoogle className="text-red-500" />
+            {isLoading ? "Syncing..." : "Continue with Google"}
           </button>
         </motion.div>
 
@@ -96,8 +115,9 @@ const Login = () => {
             </label>
             <input
               type="email"
+              disabled={isLoading}
               placeholder="YOUR@EMAIL.COM"
-              className="w-full rounded-none border border-gray-100 bg-gray-50 px-4 py-3 text-[11px] font-bold tracking-widest text-black focus:border-black focus:bg-white focus:outline-none transition-all placeholder:text-gray-200"
+              className="w-full rounded-none border border-gray-100 bg-gray-50 px-4 py-3 text-[11px] font-bold tracking-widest text-black focus:border-black focus:bg-white focus:outline-none transition-all placeholder:text-gray-200 disabled:opacity-70"
               onChange={(e) => setEmail(e.target.value)}
               required
             />
@@ -109,8 +129,9 @@ const Login = () => {
             </label>
             <input
               type="password"
+              disabled={isLoading}
               placeholder="••••••••"
-              className="w-full rounded-none border border-gray-100 bg-gray-50 px-4 py-3 text-[11px] font-bold tracking-widest text-black focus:border-black focus:bg-white focus:outline-none transition-all"
+              className="w-full rounded-none border border-gray-100 bg-gray-50 px-4 py-3 text-[11px] font-bold tracking-widest text-black focus:border-black focus:bg-white focus:outline-none transition-all disabled:opacity-70"
               onChange={(e) => setPassword(e.target.value)}
               required
             />
@@ -118,12 +139,20 @@ const Login = () => {
 
           <motion.button
             variants={itemVariants}
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={!isLoading ? { scale: 1.01 } : {}}
+            whileTap={!isLoading ? { scale: 0.98 } : {}}
             type="submit"
-            className="w-full rounded-none bg-black py-4 text-[11px] font-black uppercase tracking-[0.3em] text-white hover:bg-gray-900 transition-all shadow-lg mt-6"
+            disabled={isLoading}
+            className={`w-full rounded-none bg-black py-4 text-[11px] font-black uppercase tracking-[0.3em] text-white transition-all shadow-lg mt-6 flex items-center justify-center gap-2
+              ${isLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-gray-900"}`}
           >
-            Sign In
+            {isLoading ? (
+              <>
+                <FaCircleNotch className="animate-spin" /> Authorization...
+              </>
+            ) : (
+              "Sign In"
+            )}
           </motion.button>
         </form>
 

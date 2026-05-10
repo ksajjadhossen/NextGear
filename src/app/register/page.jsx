@@ -1,34 +1,48 @@
 "use client";
 import React, { useState } from "react";
-import { FaGoogle } from "react-icons/fa";
+import { FaGoogle, FaCircleNotch } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { loginWithGoogle, registerWithEmail } from "@/lib/authOperation";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleGoogleLogin = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
     try {
       await loginWithGoogle();
+      toast.success("ACCOUNT_SYNC_SUCCESS");
       router.push("/");
     } catch (error) {
       console.error("Google login failed:", error);
+      toast.error("GOOGLE_AUTH_FAILED");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleEmailRegistration = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
+
+    setIsLoading(true);
     try {
       await registerWithEmail(fullName, email, password);
+      toast.success("ACCOUNT_CREATED_SUCCESSFULLY");
       router.push("/");
-      console.log("successfully created account");
     } catch (error) {
       console.error("Email registration failed:", error);
+      toast.error("REGISTRATION_FAILED: CHECK_DETAILS");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -70,10 +84,14 @@ const Register = () => {
         {/* Google Signup */}
         <motion.div variants={itemVariants} className="space-y-3 mb-8">
           <button
-            onClick={() => handleGoogleLogin()}
-            className="flex w-full items-center justify-center gap-3 rounded-none border border-gray-100 py-3 text-[11px] font-bold uppercase tracking-widest text-black hover:bg-black hover:text-white transition-all duration-300 active:scale-95 shadow-sm"
+            type="button"
+            disabled={isLoading}
+            onClick={handleGoogleLogin}
+            className={`flex w-full items-center justify-center gap-3 rounded-none border border-gray-100 py-3 text-[11px] font-bold uppercase tracking-widest text-black transition-all duration-300 shadow-sm
+              ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-black hover:text-white active:scale-95"}`}
           >
-            <FaGoogle className="text-red-500" /> Sign up with Google
+            <FaGoogle className="text-red-500" />
+            {isLoading ? "Processing..." : "Sign up with Google"}
           </button>
         </motion.div>
 
@@ -98,8 +116,9 @@ const Register = () => {
             </label>
             <input
               type="text"
-              placeholder="Enter your full name"
-              className="w-full rounded-none border border-gray-100 bg-gray-50 px-4 py-3 text-[11px] font-bold tracking-widest text-black focus:border-black focus:bg-white focus:outline-none transition-all placeholder:text-gray-200"
+              disabled={isLoading}
+              placeholder="ENTER YOUR FULL NAME"
+              className="w-full rounded-none border border-gray-100 bg-gray-50 px-4 py-3 text-[11px] font-bold tracking-widest text-black focus:border-black focus:bg-white focus:outline-none transition-all placeholder:text-gray-200 disabled:opacity-70"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               required
@@ -112,8 +131,9 @@ const Register = () => {
             </label>
             <input
               type="email"
-              placeholder="Enter your email address"
-              className="w-full rounded-none border border-gray-100 bg-gray-50 px-4 py-3 text-[11px] font-bold tracking-widest text-black focus:border-black focus:bg-white focus:outline-none transition-all placeholder:text-gray-200"
+              disabled={isLoading}
+              placeholder="YOUR@EMAIL.COM"
+              className="w-full rounded-none border border-gray-100 bg-gray-50 px-4 py-3 text-[11px] font-bold tracking-widest text-black focus:border-black focus:bg-white focus:outline-none transition-all placeholder:text-gray-200 disabled:opacity-70"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -126,8 +146,9 @@ const Register = () => {
             </label>
             <input
               type="password"
-              placeholder="Enter a strong password"
-              className="w-full rounded-none border border-gray-100 bg-gray-50 px-4 py-3 text-[11px] font-bold tracking-widest text-black focus:border-black focus:bg-white focus:outline-none transition-all"
+              disabled={isLoading}
+              placeholder="••••••••"
+              className="w-full rounded-none border border-gray-100 bg-gray-50 px-4 py-3 text-[11px] font-bold tracking-widest text-black focus:border-black focus:bg-white focus:outline-none transition-all disabled:opacity-70"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -136,12 +157,20 @@ const Register = () => {
 
           <motion.button
             variants={itemVariants}
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={!isLoading ? { scale: 1.01 } : {}}
+            whileTap={!isLoading ? { scale: 0.98 } : {}}
             type="submit"
-            className="w-full rounded-none bg-black py-4 text-[11px] font-black uppercase tracking-[0.3em] text-white hover:bg-gray-900 transition-all shadow-lg mt-6"
+            disabled={isLoading}
+            className={`w-full rounded-none bg-black py-4 text-[11px] font-black uppercase tracking-[0.3em] text-white transition-all shadow-lg mt-6 flex items-center justify-center gap-2
+              ${isLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-gray-900"}`}
           >
-            Create Account
+            {isLoading ? (
+              <>
+                <FaCircleNotch className="animate-spin" /> Provisioning...
+              </>
+            ) : (
+              "Create Account"
+            )}
           </motion.button>
         </form>
 

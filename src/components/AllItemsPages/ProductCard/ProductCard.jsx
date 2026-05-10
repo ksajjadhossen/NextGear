@@ -82,7 +82,7 @@ const ProductCard = ({ product }) => {
         <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
           <div className="flex flex-col">
             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">
-              MSRP
+              MRP
             </span>
             <span className="text-lg font-mono font-bold text-black leading-none">
               ${product?.price?.toLocaleString() || "0.00"}
