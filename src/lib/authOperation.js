@@ -86,6 +86,7 @@ export const loginWithEmail = async (email, password) => {
       cleanEmail,
       cleanPassword,
     );
+    await syncUserToDb(result.user);
     toast.success("Logged in successfully!");
     return result.user;
   } catch (error) {

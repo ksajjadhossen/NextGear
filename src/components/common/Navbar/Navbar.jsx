@@ -20,6 +20,7 @@ const Navbar = () => {
   useEffect(() => {
     const checkRole = () => {
       const userRole = Cookies.get("userRole");
+      console.log("getting user role here,,,", userRole);
       setRole(userRole || null);
     };
     checkRole();

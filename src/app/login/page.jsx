@@ -4,14 +4,31 @@ import { FaGoogle, FaCircleNotch } from "react-icons/fa";
 import Link from "next/link";
 import { loginWithEmail, loginWithGoogle } from "@/lib/authOperation";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  const handleDemoLogin = (role) => {
+    if (isLoading) return;
+    setIsLoading(true);
+
+    if (role === "admin") {
+      setEmail("admin@nextgear.com");
+      setPassword("admin123#@#$");
+    } else {
+      setEmail("customer@nextgear.com");
+      setPassword("user123!@#$");
+    }
+
+    toast.success(`${role.toUpperCase()}_DEMO: AUTOFILLED`);
+    setIsLoading(false);
+  };
 
   const handleGoogleLogin = async () => {
     if (isLoading) return;
@@ -80,6 +97,31 @@ const Login = () => {
           </p>
         </motion.div>
 
+        <motion.div
+          variants={itemVariants}
+          className="space-y-4 mb-8 border border-gray-100 p-6"
+        >
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 text-center mb-4">
+            Quick Demo Access
+          </p>
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={() => handleDemoLogin("customer")}
+              className="flex-1 rounded-none border border-blue-100 bg-blue-50 py-3 text-[10px] font-black uppercase tracking-widest text-blue-800 transition-all hover:bg-blue-100"
+            >
+              Customer Demo
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDemoLogin("admin")}
+              className="flex-1 rounded-none border border-purple-100 bg-purple-50 py-3 text-[10px] font-black uppercase tracking-widest text-purple-800 transition-all hover:bg-purple-100"
+            >
+              Admin Demo
+            </button>
+          </div>
+        </motion.div>
+
         {/* Social Login */}
         <motion.div variants={itemVariants} className="space-y-3 mb-8">
           <button
@@ -103,7 +145,7 @@ const Login = () => {
             <div className="w-full border-t border-gray-100"></div>
           </div>
           <span className="relative bg-white px-3 text-[9px] uppercase text-gray-300 font-black tracking-widest">
-            Or continue with
+            Or continue with email/pw
           </span>
         </motion.div>
 
@@ -115,6 +157,7 @@ const Login = () => {
             </label>
             <input
               type="email"
+              value={email}
               disabled={isLoading}
               placeholder="YOUR@EMAIL.COM"
               className="w-full rounded-none border border-gray-100 bg-gray-50 px-4 py-3 text-[11px] font-bold tracking-widest text-black focus:border-black focus:bg-white focus:outline-none transition-all placeholder:text-gray-200 disabled:opacity-70"
@@ -129,6 +172,7 @@ const Login = () => {
             </label>
             <input
               type="password"
+              value={password}
               disabled={isLoading}
               placeholder="••••••••"
               className="w-full rounded-none border border-gray-100 bg-gray-50 px-4 py-3 text-[11px] font-bold tracking-widest text-black focus:border-black focus:bg-white focus:outline-none transition-all disabled:opacity-70"
