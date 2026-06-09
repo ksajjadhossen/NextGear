@@ -20,7 +20,6 @@ const Navbar = () => {
   useEffect(() => {
     const checkRole = () => {
       const userRole = Cookies.get("userRole");
-      console.log("getting user role here,,,", userRole);
       setRole(userRole || null);
     };
     checkRole();
@@ -356,7 +355,6 @@ const Navbar = () => {
                   </Link>
                 </li>
 
-                {/* My Items সরিয়ে এখন Add Items */}
                 <li>
                   <Link
                     href="/items/add"
@@ -370,7 +368,6 @@ const Navbar = () => {
                   </Link>
                 </li>
 
-                {/* একদম শেষের স্পেশাল ড্যাশবোর্ড বাটন - "Next Gear" স্টাইলে */}
                 <div className="mt-auto pt-6 border-t">
                   <Link
                     href="/admin"

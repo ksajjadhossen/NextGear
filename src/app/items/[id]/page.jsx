@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation"; // useRouter যোগ করা হয়েছে
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { FiArrowLeft, FiChevronRight } from "react-icons/fi";
-import ProductCard from "@/components/AllItemsPages/ProductCard/ProductCard"; // Related items এর জন্য
+import ProductCard from "@/components/AllItemsPages/ProductCard/ProductCard";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "@/lib/firebase";
 import toast from "react-hot-toast";
@@ -122,6 +122,32 @@ const ProductDetails = () => {
     }
   };
 
+  const handleCheckout = async () => {
+    setLoading(false);
+    try {
+      const response = await fetch("/api/stripe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: product.name,
+          price: product.price,
+          image: product.image,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error(data.error || "Something went wrong!");
+      }
+    } catch (error) {
+      console.error("Payment Error:", error);
+      toast.error("Failed to initiate payment.");
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-12 lg:py-24 bg-white">
       {/* ১. Back Button Section */}
@@ -223,7 +249,10 @@ const ProductDetails = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 pt-10">
-            <button className="flex-1 bg-black text-white px-12 py-5 text-[11px] font-black uppercase tracking-[0.3em] hover:bg-slate-800 transition-all active:scale-[0.98]">
+            <button
+              onClick={handleCheckout}
+              className="flex-1 bg-black text-white px-12 py-5 text-[11px] font-black uppercase tracking-[0.3em] hover:bg-slate-800 transition-all active:scale-[0.98]"
+            >
               Acquire Now
             </button>
             <button

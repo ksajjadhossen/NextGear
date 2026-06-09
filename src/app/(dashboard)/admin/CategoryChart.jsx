@@ -12,7 +12,6 @@ import {
 } from "recharts";
 
 const InventoryLineChart = ({ chartData = [] }) => {
-  // ডাটা প্রসেসিং: ক্যাটাগরি অনুযায়ী প্রডাক্ট সংখ্যা বের করা
   const processedData = useMemo(() => {
     if (!chartData || !chartData.length) return [];
 
@@ -39,7 +38,6 @@ const InventoryLineChart = ({ chartData = [] }) => {
   return (
     <div className="w-full mb-10 px-4 flex justify-center">
       <div className="bg-white border border-gray-100 p-8 flex flex-col items-center transition-all hover:shadow-sm h-[450px] w-full max-w-5xl">
-        {/* টাইটেল স্টাইল */}
         <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-black mb-10 border-b border-black pb-2">
           Inventory Trend // Statistics
         </h3>
@@ -50,7 +48,6 @@ const InventoryLineChart = ({ chartData = [] }) => {
               data={processedData}
               margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
             >
-              {/* হালকা হরিজন্টাল লাইন */}
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
@@ -97,7 +94,6 @@ const InventoryLineChart = ({ chartData = [] }) => {
                 )}
               />
 
-              {/* মেইন লাইন ডিজাইন */}
               <Line
                 type="monotone"
                 dataKey="count"

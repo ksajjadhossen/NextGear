@@ -3,10 +3,9 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { Star, ArrowRight } from "lucide-react"; // lucide-react ব্যবহার করা হয়েছে
+import { Star, ArrowRight } from "lucide-react";
 
 const ProductCard = ({ product }) => {
-  // ডাটাবেস থেকে স্টোক চেক করা
   const isOutOfStock = product?.stock <= 0;
 
   return (

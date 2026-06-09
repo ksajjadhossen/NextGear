@@ -65,7 +65,6 @@ export async function DELETE(request) {
     await connectDB();
     const { userEmail, productId } = await request.json();
 
-    // ডাটা আছে কি না চেক করা
     if (!userEmail || !productId) {
       return NextResponse.json(
         { error: "userEmail and productId are required" },
@@ -73,10 +72,9 @@ export async function DELETE(request) {
       );
     }
 
-    // mongoose মডেল ব্যবহার করে ডিলিট করা
     const result = await wishlistModel.deleteOne({
       userEmail: userEmail,
-      productId: String(productId), // আইডিটি স্ট্রিং হিসেবে নিশ্চিত করা
+      productId: String(productId),
     });
 
     if (result.deletedCount === 1) {

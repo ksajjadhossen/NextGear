@@ -2,7 +2,6 @@ import Link from "next/link";
 import React from "react";
 
 const Hero = ({ imageUrl }) => {
-  // প্রমিয়াম ডিফল্ট ইমেজ (যদি imageUrl না দেয়া থাকে)
   const defaultImage =
     "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=2000&auto=format&fit=crop";
 
