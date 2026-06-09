@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 const WishlistPage = () => {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [checkoutLoadingId, setCheckoutLoadingId] = useState(null); // কোন আইটেমটি পেমেন্ট হচ্ছে তার আইডি ট্র্যাক করার জন্য
+  const [checkoutLoadingId, setCheckoutLoadingId] = useState(null);
   const [user, setUser] = useState(null);
   const router = useRouter();
   const auth = getAuth(app);
@@ -58,15 +58,13 @@ const WishlistPage = () => {
     return () => unsubscribe();
   }, [auth, router]);
 
-  // 💳 স্ট্রাইপ পেমেন্ট হ্যান্ডলার ফাংশন
   const handleCheckout = async (item) => {
     if (!item.price || item.price === 0) {
       return toast.error("This item cannot be purchased (Price missing)");
     }
 
-    setCheckoutLoadingId(item.productId); // স্পেসিফিক বাটনে লোডিং দেখাবে
+    setCheckoutLoadingId(item.productId);
     try {
-      // আমরা তৈরি করা ডাইনামিক এপিআই রাউটে প্রোডাক্টের ডেটা বডিতে পাঠাচ্ছি
       const response = await fetch("/api/stripe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -80,7 +78,7 @@ const WishlistPage = () => {
       const data = await response.json();
 
       if (data.url) {
-        window.location.href = data.url; // স্ট্রাইপ পেমেন্ট পেজে রিডাইরেক্ট
+        window.location.href = data.url;
       } else {
         toast.error(data.error || "Something went wrong!");
       }
@@ -88,7 +86,7 @@ const WishlistPage = () => {
       console.error("Payment Error:", error);
       toast.error("Failed to initiate payment.");
     } finally {
-      setCheckoutLoadingId(null); // লোডিং বন্ধ
+      setCheckoutLoadingId(null);
     }
   };
 
