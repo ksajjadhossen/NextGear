@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 const WishlistPage = () => {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [checkoutLoadingId, setCheckoutLoadingId] = useState(null); // কোন আইটেমটি পেমেন্ট হচ্ছে তার আইডি ট্র্যাক করার জন্য
   const [user, setUser] = useState(null);
   const router = useRouter();
   const auth = getAuth(app);
@@ -57,6 +58,40 @@ const WishlistPage = () => {
     return () => unsubscribe();
   }, [auth, router]);
 
+  // 💳 স্ট্রাইপ পেমেন্ট হ্যান্ডলার ফাংশন
+  const handleCheckout = async (item) => {
+    if (!item.price || item.price === 0) {
+      return toast.error("This item cannot be purchased (Price missing)");
+    }
+
+    setCheckoutLoadingId(item.productId); // স্পেসিফিক বাটনে লোডিং দেখাবে
+    try {
+      // আমরা তৈরি করা ডাইনামিক এপিআই রাউটে প্রোডাক্টের ডেটা বডিতে পাঠাচ্ছি
+      const response = await fetch("/api/stripe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: item.name || item.productName,
+          price: item.price,
+          image: item.image,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url; // স্ট্রাইপ পেমেন্ট পেজে রিডাইরেক্ট
+      } else {
+        toast.error(data.error || "Something went wrong!");
+      }
+    } catch (error) {
+      console.error("Payment Error:", error);
+      toast.error("Failed to initiate payment.");
+    } finally {
+      setCheckoutLoadingId(null); // লোডিং বন্ধ
+    }
+  };
+
   const handleRemove = async (productId) => {
     if (!user) return toast.error("Please login first");
 
@@ -87,6 +122,14 @@ const WishlistPage = () => {
       toast.error("Failed to sync with database");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-white text-black font-mono text-xs uppercase tracking-widest">
+        Loading private collection...
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white min-h-screen p-8 font-sans text-black">
@@ -185,8 +228,16 @@ const WishlistPage = () => {
 
               {/* Action Buttons */}
               <div className="mt-8 flex gap-1">
-                <button className="flex-1 bg-black text-white py-3 text-[9px] font-bold uppercase tracking-[0.2em] hover:bg-zinc-800 transition-all active:scale-95">
-                  Acquire Now
+                <button
+                  onClick={() => handleCheckout(item)}
+                  disabled={checkoutLoadingId === item.productId}
+                  className="flex-1 bg-black text-white py-3 text-[9px] font-bold uppercase tracking-[0.2em] hover:bg-zinc-800 transition-all active:scale-95 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
+                >
+                  {checkoutLoadingId === item.productId ? (
+                    <span className="animate-pulse">Processing...</span>
+                  ) : (
+                    "Acquire Now"
+                  )}
                 </button>
               </div>
             </div>
