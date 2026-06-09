@@ -5,6 +5,7 @@
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Database-green?style=for-the-badge&logo=mongodb)
 ![Firebase](https://img.shields.io/badge/Firebase-Authentication-orange?style=for-the-badge&logo=firebase)
+![Stripe](https://img.shields.io/badge/Stripe-Payments-6772E5?style=for-the-badge&logo=stripe)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-Styling-38BDF8?style=for-the-badge&logo=tailwind-css)
 ![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?style=for-the-badge&logo=vercel)
 
@@ -21,14 +22,6 @@
 
 ---
 
-# 🔐 Authentication Notice
-
-Admin credentials are not publicly shared for security reasons.
-
-If you want to test admin functionalities, please contact the developer directly.
-
----
-
 # 👨‍💻 Developer Profiles
 
 - 💼 **GitHub:** https://github.com/ksajjadhossen
@@ -40,20 +33,19 @@ If you want to test admin functionalities, please contact the developer directly
 
 # 📖 Project Overview
 
-**Next Gear** is a modern, premium-quality full-stack e-commerce platform built with **Next.js App Router**, **MongoDB Atlas**, and **Firebase Authentication**.
+**Next Gear** is a modern, premium-quality full-stack e-commerce platform built with **Next.js App Router**, **MongoDB Atlas**, **Firebase Authentication**, and **Stripe**.
 
 Inspired by Apple’s minimalist design philosophy, the platform delivers a smooth, elegant, and highly responsive shopping experience tailored for modern tech enthusiasts.
 
-The application evolved from a simple front-end concept into a production-ready full-stack architecture featuring:
+The application features a production-ready full-stack architecture including:
 
-- Secure authentication & authorization
-- Protected admin dashboard
-- Dynamic product inventory management
-- Real-time product search & filtering
-- Interactive analytics visualization
-- Optimized rendering performance
-- Cloud database persistence
-- Modern responsive UI/UX
+- Multi-role secure authentication (Customer & Admin)
+- Instantly accessible demo credentials for quick evaluation
+- Secure Stripe payment gateway integration
+- Protected admin dashboard with real-time inventory control
+- Dynamic product search, filtering, and pagination
+- Interactive data visualization for platform analytics
+- Cloud database persistence with optimized rendering performance
 
 ---
 
@@ -63,180 +55,118 @@ The application evolved from a simple front-end concept into a production-ready 
 
 Built using modern **Next.js 15 App Router** architecture with:
 
-- Server Components
-- Client Components
-- Dynamic Rendering
-- Route Handlers
-- Async Data Fetching
-- Optimized Rendering Strategies
+- Server Components & Client Components
+- Dynamic & Static Rendering Strategies
+- Route Handlers & Async Data Fetching
+- Optimized Image and Asset Delivery
 
 ---
 
 ## 🗄️ Database Engineering
 
-Designed with scalable and structured database architecture using:
+Designed with a scalable, structured relational-like schema layout in a NoSQL database environment using:
 
-- MongoDB Atlas
-- Mongoose ODM
-- Product Collections
-- User Collections
-- Wishlist Collections
+- MongoDB Atlas cloud clustering
+- Mongoose ODM for strong object modeling
+- Highly decoupled collections: Products, Users, Wishlists, and Orders
 
 ---
 
-## 🔒 Authentication & Authorization
+## 🔒 Authentication & Authorization (With Quick Demo Access)
 
-Implemented secure authentication and authorization using Firebase Authentication with:
+Implemented secure user lifecycle management utilizing Firebase Authentication optimized with a dual-role entry point.
 
-- Google Sign In
-- Email/Password Authentication
-- Middleware Route Protection
-- Protected Routes
-- Role-Based Access Control (RBAC)
-- Admin-Only Dashboard Access
+### 🌟 Seamless Role-Based Login Flow
 
-### ✨ Authentication Experience Optimization
+- **Quick Demo Access:** Eliminates friction for recruiters and testers. Features dedicated **Customer Demo** and **Admin Demo** trigger modules to automatically load credentials for instant dashboard evaluation.
+- **Dual-Role Capabilities:** Seamlessly branches experience based on the logged-in user's role metadata.
+- **Flexible Sign-in Methods:** Supports Google OAuth Provider along with classic Email/Password combinations.
+- **Middleware-Level Protection:** Secures application sub-routes globally, blocking unauthorized database access at the boundary layout.
 
-The authentication system is carefully optimized to ensure a smooth and professional user experience.
+### ✨ Authentication UX Optimization
 
-Features include:
+- Loading state handling during login & registration (disabling action buttons to prevent race conditions).
+- Prevention of duplicate API payload transmissions.
+- Real-time toast feedback and automatic route forwarding upon handshake validation.
 
-- Loading state handling during login & registration
-- Disabled submit buttons while requests are processing
-- Prevention of multiple API requests
-- Smooth async authentication flow
-- Real-time authentication feedback
-- Toast notifications for success & errors
-- Auto redirect after successful authentication
-- Better UX during async operations
+---
 
-This prevents accidental multiple submissions and improves overall application responsiveness.
+## 💳 Secure Checkout & Payment Processing
+
+Integrated **Stripe** to provide a secure, PCI-compliant payment pipeline for checking out hardware and gadgets.
+
+- **Stripe Checkout Integration:** Leverages Stripe's highly optimized payment flows for processing major credit cards.
+- **Secure Transaction Workflows:** Verifies order totals server-side prior to issuing payment intents to prevent pricing exploitation.
+- **Order State Persistence:** Updates underlying MongoDB order documents upon successful transactions.
 
 ---
 
 ## 🎨 UI/UX Philosophy
 
-The interface is intentionally designed with a clean **light-theme aesthetic** inspired by Apple’s modern website experience.
+The interface is intentionally designed with a clean, **light-theme aesthetic** inspired by Apple’s modern digital commerce presence.
 
-Features include:
-
-- Minimalist Design System
-- Smooth User Experience
-- Responsive Layouts
-- Elegant Typography
-- Professional Product Presentation
-- Interactive Dashboard Experience
+- Minimalist design token system via Tailwind CSS
+- Fluid layout transitions & strict typographical scale hierarchy
+- Responsive grids accommodating layout viewports from mobile screens up to UltraWide panels
 
 ---
 
 # 🛡️ Advanced Admin Dashboard
 
-A fully protected `/admin` route is implemented exclusively for administrators.
-
-Unauthorized users cannot access the dashboard.
+A fully protected `/admin` route is implemented exclusively for accounts carrying administrative claims. Unauthorized navigation triggers automatic fallbacks.
 
 ## Admin Dashboard Features
 
-### 📦 Complete Product Management
+### 📦 End-to-End Inventory Management
 
-Admins can:
+- High-level overview of global product catalogs.
+- CRUD operations: Add new hardware, edit parameters on the fly, and execute soft/hard deletions.
+- **Optimistic/Instant Editing:** Mutations reflect in the database immediately, refreshing view layouts without manual browser reloads.
 
-- View all products
-- Add new products
-- Edit existing products
-- Delete products
-- Manage uploaded inventory instantly
+### 📊 Business Intelligence Analytics
 
-### ✏️ Instant Product Editing
+Integrated an analytical visualization center built with **Recharts** displaying:
 
-Products can be edited directly after publishing without page reload interruptions.
-
-### 📊 Analytics Dashboard
-
-Integrated modern data visualization system with:
-
-- Bar Chart
-- Line Chart
-- Pie Chart
-
-Charts are used to visualize:
-
-- Product statistics
-- Inventory insights
-- Category distribution
-- Platform activity overview
+- **Bar & Line Charts:** Projecting platform engagement metrics and stock levels.
+- **Pie Charts:** Analyzing categoric breakdown of inventory volume and brand distributions.
 
 ---
 
 # ✨ Core Features
 
-## ❤️ Dynamic Wishlist System
+### ❤️ Dynamic Wishlist System
 
-- Add/remove wishlist products instantly
-- Persistent MongoDB storage
-- User-specific collections
-- Protected wishlist access
-- Real-time updates without refresh
+- Persistent, user-specific item pinning backed by MongoDB.
+- Instant, non-blocking additions and removals using real-time UI synchronization.
 
----
+### 🔍 Smart Product Discovery
 
-## 🔍 Smart Product Discovery
+- **Multi-Query Dynamic Search:** Evaluates against product name strings and specific categories simultaneously for rapid discovery.
+- **Advanced Filtering & Sorting:** Filter inventory dynamically by price boundaries or category taxonomy, and sort matching targets via chronological or cost metrics.
+- **Optimized Pagination System:** Splits deep data arrays into manageable chunks, reducing network overhead and maintaining smooth UX.
 
-### Advanced Search System
+### ⏳ Interactive Feedback System
 
-Users can search products using:
-
-- Product Name
-- Product Category
-
-Both search fields work dynamically for faster product discovery.
-
----
-
-## 🎯 Advanced Filtering & Sorting
-
-Integrated smart filtering system with:
-
-- Category Filtering
-- Price Filtering
-- Product Sorting
-- Dynamic Product Queries
-
----
-
-## 📄 Pagination System
-
-Implemented efficient pagination for optimized browsing experience and performance handling.
-
----
-
-## ⏳ Interactive Feedback System
-
-Integrated modern feedback handling with:
-
-- React Toastify
-- Loading Spinners
-- Skeleton Loaders
-- Optimistic UI Updates
-- Dynamic State Handling
-- Smooth Page Transitions
+- **React Toastify:** Emits responsive visual indicators for validation responses.
+- **Skeleton Loaders:** Prevents content layout shifts (CLS) during server async resolutions.
 
 ---
 
 # 🛠️ Tech Stack
 
-| Technology     | Usage                |
-| -------------- | -------------------- |
-| Next.js 15     | Full-Stack Framework |
-| React 19       | Frontend Library     |
-| MongoDB Atlas  | Cloud Database       |
-| Mongoose       | ODM                  |
-| Firebase Auth  | Authentication       |
-| Tailwind CSS   | Styling              |
-| React Toastify | Notifications        |
-| Recharts       | Analytics & Charts   |
-| Lucide React   | Icons                |
-| Vercel         | Deployment           |
+| Technology     | Usage                             |
+| -------------- | --------------------------------- |
+| Next.js 15     | Full-Stack Framework (App Router) |
+| React 19       | Component-Driven Frontend Library |
+| MongoDB Atlas  | Managed Cloud NoSQL Database      |
+| Mongoose       | Object Data Modeling (ODM)        |
+| Firebase Auth  | Authentication & Provider OAuth   |
+| Stripe         | Secure Payment Infrastructure     |
+| Tailwind CSS   | Utility-First Responsive Styling  |
+| React Toastify | Client Notifications System       |
+| Recharts       | Responsive Analytical Data Charts |
+| Lucide React   | Scalable Vector Icon Library      |
+| Vercel         | Cloud Edge Deployment Hosting     |
 
 ---
 
@@ -244,13 +174,13 @@ Integrated modern feedback handling with:
 
 ```bash
 src/
- ┣ app/
- ┣ components/
- ┣ lib/
- ┣ models/
- ┣ providers/
- ┣ services/
- ┣ hooks/
- ┣ utils/
- ┗ assets/
+ ┣ app/         # App router pages, layouts, and API route handlers
+ ┣ components/  # Reusable atomic UI elements and layouts
+ ┣ lib/         # Third-party configurations (MongoDB connection, Stripe config)
+ ┣ models/      # Mongoose database collection structures
+ ┣ providers/   # Context wrappers (Auth, Theme, Toast providers)
+ ┣ services/    # Extracted data fetching logic and database calls
+ ┣ hooks/       # Custom React state abstractions
+ ┣ utils/       # Utility calculations and formatter functions
+ ┗ assets/      # Static graphics, iconography, and image elements
 ```
