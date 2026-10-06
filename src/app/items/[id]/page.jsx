@@ -123,6 +123,19 @@ const ProductDetails = () => {
   };
 
   const handleCheckout = async () => {
+    if (!currentUserEmail) {
+      toast.error("Please login to proceed with checkout", {
+        style: {
+          borderRadius: "0px",
+          background: "#000",
+          color: "#fff",
+          fontSize: "12px",
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
+        },
+      });
+      return;
+    }
     setLoading(false);
     try {
       const response = await fetch("/api/stripe", {
